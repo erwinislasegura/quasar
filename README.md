@@ -61,4 +61,4 @@ Los módulos administrativos no contienen filas de demostración: Usuarios, Role
 
 ## Módulo de lectura para Windows
 
-El panel ofrece un **lector web** desde el módulo de equipos. En cada computador Windows se abre la página con Microsoft Edge o Google Chrome, se selecciona `Analisis.txt` y se mantiene la pestaña abierta; no requiere instalar software. El navegador conserva la última línea confirmada y envía únicamente las líneas nuevas a `POST /api/measurements` usando la clave `AGENT_API_KEY`. El agente PowerShell permanece disponible como alternativa para equipos que deban operar sin una ventana abierta.
+El panel ofrece un **Lector Windows** en `/windows-reader`. En cada computador Windows se abre la página con Microsoft Edge o Google Chrome, se selecciona `Analisis.txt` y se mantiene la pestaña abierta; no requiere instalar agentes, servicios ni tareas programadas. El navegador conserva la última línea confirmada y envía únicamente las líneas nuevas a `POST /api/measurements` usando la clave `AGENT_API_KEY`.

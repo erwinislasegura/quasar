@@ -25,7 +25,7 @@ INSERT INTO modulos (clave, nombre, ruta, seccion, orden, activo) VALUES
 ('mediciones', 'Mediciones', '/mediciones', 'Gestión', 20, 1),
 ('archivos', 'Archivos', '/archivos', 'Gestión', 30, 1),
 ('equipos', 'Equipos', '/equipos', 'Gestión', 40, 1),
-('windows-agent', 'Agente Windows', '/windows-agent', 'Gestión', 50, 1),
+('windows-reader', 'Lector Windows', '/windows-reader', 'Gestión', 50, 1),
 ('usuarios', 'Usuarios', '/usuarios', 'Administración', 60, 1),
 ('roles', 'Roles', '/roles', 'Administración', 70, 1),
 ('permisos', 'Permisos', '/permisos', 'Administración', 80, 1),
