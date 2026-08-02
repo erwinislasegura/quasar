@@ -23,15 +23,34 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($path === '/login' && $method === 'GET') { view('auth/login', ['title' => 'Acceso'], 'auth'); return; }
 if ($path === '/login' && $method === 'POST') {
     if (!hash_equals($_SESSION['_csrf'] ?? '', $_POST['_csrf'] ?? '')) { http_response_code(419); exit('Sesión expirada'); }
-    if (($_POST['email'] ?? '') === 'admin@quasar.local' && ($_POST['password'] ?? '') === (getenv('ADMIN_PASSWORD') ?: 'quasar123')) {
-        session_regenerate_id(true); $_SESSION['user'] = ['name' => 'Administrador local', 'role' => 'Administrador']; header('Location: /'); return;
+    $connect = require dirname(__DIR__) . '/config/database.php';
+    $pdo = $connect();
+    $user = null;
+    if ($pdo instanceof PDO) {
+        $statement = $pdo->prepare('SELECT u.nombre, u.email, u.password_hash, r.nombre AS rol FROM usuarios u JOIN roles r ON r.id = u.rol_id WHERE u.email = :email AND u.activo = 1 LIMIT 1');
+        $statement->execute(['email' => $_POST['email'] ?? '']);
+        $user = $statement->fetch() ?: null;
+    } elseif (($_POST['email'] ?? '') === 'admin@quasar.local') {
+        $user = ['nombre' => 'Superusuario', 'email' => 'admin@quasar.local', 'password_hash' => password_hash(getenv('ADMIN_PASSWORD') ?: 'quasar123', PASSWORD_DEFAULT), 'rol' => 'Superadministrador'];
+    }
+    if ($user !== null && password_verify((string) ($_POST['password'] ?? ''), $user['password_hash'])) {
+        session_regenerate_id(true); $_SESSION['user'] = ['name' => $user['nombre'], 'email' => $user['email'], 'role' => $user['rol']]; header('Location: /'); return;
     }
     $_SESSION['flashes']['error'] = 'Las credenciales no son correctas.'; header('Location: /login'); return;
 }
 if ($path === '/logout') { $_SESSION = []; session_destroy(); header('Location: /login'); return; }
 
-// Set REQUIRE_AUTH=1 in production; keeping it optional permits visual review immediately.
-if (getenv('REQUIRE_AUTH') === '1' && empty($_SESSION['user'])) { header('Location: /login'); return; }
+if ($path === '/api/measurements' && $method === 'POST') {
+    if (!hash_equals(getenv('AGENT_API_KEY') ?: 'change-this-agent-key', $_SERVER['HTTP_X_API_KEY'] ?? '')) { http_response_code(401); echo json_encode(['error' => 'No autorizado']); return; }
+    $payload = json_decode(file_get_contents('php://input') ?: '', true);
+    $line = trim((string) ($payload['line'] ?? ''));
+    if (!preg_match('/^\d{2}-\d{2}-\d{4}-\d{2}:\d{2}:\d{2};Tiempo;-?\d+[,.]\d+;Razon;-?\d+[,.]\d+;Conductividad;-?\d+[,.]\d+$/', $line)) { http_response_code(422); echo json_encode(['error' => 'Línea inválida']); return; }
+    file_put_contents(dirname(__DIR__) . '/Analisis.txt', $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+    header('Content-Type: application/json'); http_response_code(201); echo json_encode(['status' => 'created']); return;
+}
+
+// El panel siempre requiere una sesión iniciada.
+if (empty($_SESSION['user'])) { header('Location: /login'); return; }
 
 if ($path === '/') { require dirname(__DIR__) . '/index.php'; return; }
 $modules = [

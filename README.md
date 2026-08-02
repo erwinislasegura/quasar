@@ -12,7 +12,7 @@ Requiere PHP 8.1 o posterior.
 php -S 127.0.0.1:8080 -t public public/index.php
 ```
 
-Abra `http://127.0.0.1:8080`. Para exigir autenticación, ejecute con `REQUIRE_AUTH=1`; el usuario de demostración es `admin@quasar.local` y la contraseña predeterminada es `quasar123` (se puede reemplazar mediante `ADMIN_PASSWORD`).
+Abra `http://127.0.0.1:8080`. El panel siempre abre primero el login. Sin MySQL puede ingresar con `admin@quasar.local` y la contraseña definida en `ADMIN_PASSWORD` (`quasar123` de forma local). En producción debe cambiar esa contraseña.
 
 ## Arquitectura
 
@@ -29,3 +29,13 @@ Los módulos disponibles son Dashboard, Mediciones, Archivos, Equipos, Usuarios,
 ## Conexión a MySQL
 
 La conexión se encuentra aislada en `config/database.php`; no contiene credenciales dentro del código. Configure las variables mostradas en `.env.example` en el entorno del servidor. Si `DB_HOST` no está definido, la aplicación continúa leyendo `Analisis.txt`. Cuando está definido, el repositorio utiliza PDO y la tabla `mediciones` de `database/schema.sql`.
+
+Después de importar `database/schema.sql`, cree o actualice el superusuario ejecutando:
+
+```bash
+php database/create_superuser.php admin@quasar.local 'una-clave-segura' 'Superusuario'
+```
+
+## Módulo de lectura para Windows
+
+El agente solicitado está en `windows-agent/QuasarAgent.ps1`. Su instalación y configuración se explican en `windows-agent/README.md`. El agente lee las nuevas líneas del TXT, conserva su posición y las envía a `POST /api/measurements` usando la clave `AGENT_API_KEY`.
