@@ -226,6 +226,14 @@
     .btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
     .btn svg { width: 17px; height: 17px; }
 
+    .reader-form { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:20px 22px }
+    .reader-form label { display:grid;gap:7px;color:var(--muted);font-size:11px;font-weight:700 }
+    .reader-form input,.reader-form select { width:100%;height:42px;border:1px solid var(--border);border-radius:9px;background:var(--panel-soft);padding:0 12px;color:var(--text) }
+    .reader-file-box { margin:0 22px 18px;padding:16px;border:1px dashed #b8c7da;border-radius:12px;background:var(--panel-soft);display:flex;align-items:center;justify-content:space-between;gap:16px }
+    .reader-file-box div { display:grid;gap:4px }.reader-file-box small,.reader-file-box span { color:var(--muted);font-size:11px }.reader-file-box strong { font-size:14px }
+    .reader-actions { display:flex;gap:9px;padding:0 22px;flex-wrap:wrap }.reader-message { margin:14px 22px;color:var(--muted) }
+    .reader-stats { padding:0 22px 22px }.reader-stats .range-card { box-shadow:none }.reader-stats small { display:block;color:var(--muted);margin-bottom:7px }.reader-stats b { font-size:16px }
+
     .content { padding-top: 24px; }
 
     .hero-strip {

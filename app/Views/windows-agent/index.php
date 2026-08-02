@@ -1,36 +1,53 @@
 <section class="hero-strip">
   <div class="hero-copy">
-    <small>Módulo de equipos</small>
-    <h2>Desplegar agente de lectura en Windows</h2>
-    <p>Descargue el agente y su configuración en el equipo que contiene Analisis.txt. El diseño y la operación del panel no se modifican.</p>
+    <small>Lector web para Windows</small>
+    <h2>Conectar este computador sin instalar un agente</h2>
+    <p>Seleccione el archivo desde Microsoft Edge o Google Chrome y mantenga esta ventana abierta. Quasar enviará automáticamente las líneas nuevas.</p>
   </div>
-  <div class="hero-file"><strong>QuasarAgent.ps1</strong><span>PowerShell 5.1 o posterior</span></div>
+  <div class="hero-file"><strong>Sin instalación</strong><span>Ventana de navegador</span></div>
 </section>
 
-<section class="range-grid">
-  <article class="panel range-card">
-    <div class="range-head"><strong>1. Descargar agente</strong><span>PowerShell</span></div>
-    <p class="kpi-foot">Guarde el script en una carpeta permanente del equipo Windows.</p>
-    <a class="btn primary" href="/windows-agent/download?file=agent">Descargar QuasarAgent.ps1</a>
-  </article>
-  <article class="panel range-card">
-    <div class="range-head"><strong>2. Descargar configuración</strong><span>JSON</span></div>
-    <p class="kpi-foot">Renombre el archivo como config.json y complete la URL y la API key.</p>
-    <a class="btn" href="/windows-agent/download?file=config">Descargar config.example.json</a>
-  </article>
-  <article class="panel range-card">
-    <div class="range-head"><strong>3. Ejecutar</strong><span>Terminal</span></div>
-    <p class="kpi-foot">Abra PowerShell en la carpeta descargada y ejecute el comando.</p>
-    <code>powershell.exe -ExecutionPolicy Bypass -File .\QuasarAgent.ps1</code>
-  </article>
+<section class="panel table-panel web-reader" data-status-url="<?= e(url('api/agent/status')) ?>" data-measurements-url="<?= e(url('api/measurements')) ?>">
+  <div class="panel-head">
+    <div class="panel-title"><h3>Configurar lector de este equipo</h3><p>Los datos permanecen en este navegador y puede cambiarlos cuando sea necesario.</p></div>
+    <span class="badge warn" id="readerBadge">Sin configurar</span>
+  </div>
+
+  <div class="reader-form">
+    <label>Nombre del equipo<input id="readerEquipmentName" value="Equipo Windows" autocomplete="off"></label>
+    <label>Identificador único<input id="readerEquipmentId" placeholder="Ejemplo: planta-equipo-01" autocomplete="off"></label>
+    <label>Clave del agente<input id="readerApiKey" type="password" placeholder="AGENT_API_KEY" autocomplete="off"></label>
+    <label>Intervalo de lectura<select id="readerInterval"><option value="3">3 segundos</option><option value="5" selected>5 segundos</option><option value="10">10 segundos</option></select></label>
+  </div>
+
+  <div class="reader-file-box">
+    <div><small>Archivo seleccionado</small><strong id="readerFileName">Ninguno</strong><span id="readerFileMeta">Seleccione Analisis.txt para continuar</span></div>
+    <button class="btn" type="button" id="readerSelectFile">Seleccionar Analisis.txt</button>
+  </div>
+
+  <div class="reader-actions">
+    <button class="btn primary" type="button" id="readerStart" disabled>Iniciar lectura</button>
+    <button class="btn" type="button" id="readerStop" disabled>Detener</button>
+    <button class="btn" type="button" id="readerReset">Reenviar desde el inicio</button>
+  </div>
+  <p class="reader-message" id="readerMessage">Complete los datos y seleccione el archivo.</p>
+
+  <div class="range-grid reader-stats">
+    <div class="range-card"><small>Estado</small><b id="readerState">Detenido</b></div>
+    <div class="range-card"><small>Líneas enviadas</small><b id="readerSent">0</b></div>
+    <div class="range-card"><small>Última revisión</small><b id="readerLastCheck">—</b></div>
+  </div>
 </section>
 
 <section class="panel table-panel">
-  <div class="panel-head"><div class="panel-title"><h3>Parámetros del despliegue</h3><p>Los valores deben coincidir con la configuración del servidor</p></div><span class="badge ok">Disponible</span></div>
-  <div class="table-scroll"><table><thead><tr><th>Parámetro</th><th>Descripción</th><th>Ejemplo</th></tr></thead><tbody>
-    <tr><td class="metric">sourceFile</td><td>Ruta del archivo observado</td><td>C:\SistemaTXT\Entrada\Analisis.txt</td></tr>
-    <tr><td class="metric">apiUrl</td><td>Endpoint de recepción del servidor</td><td>https://servidor/api/measurements</td></tr>
-    <tr><td class="metric">apiKey</td><td>Debe coincidir con AGENT_API_KEY</td><td>Clave privada del agente</td></tr>
-    <tr><td class="metric">pollSeconds</td><td>Intervalo entre lecturas</td><td>5</td></tr>
-  </tbody></table></div>
+  <div class="panel-head"><div class="panel-title"><h3>Uso diario</h3><p>Solo necesita mantener esta página abierta</p></div><span class="badge ok">Edge / Chrome</span></div>
+  <div class="empty" style="text-align:left">
+    <p>1. Abra esta página en el computador donde se genera <code>Analisis.txt</code>.</p>
+    <p>2. Complete los datos, seleccione el archivo y pulse <strong>Iniciar lectura</strong>.</p>
+    <p>3. Mantenga esta pestaña abierta. Si Windows o el navegador se reinician, vuelva a seleccionar el archivo y pulse iniciar.</p>
+    <p>4. El lector recuerda la última línea confirmada y no vuelve a enviar mediciones anteriores.</p>
+    <p><strong>Importante:</strong> publique Quasar con HTTPS. Los navegadores solo permiten seleccionar archivos desde una página segura (o desde localhost).</p>
+  </div>
 </section>
+
+<script src="<?= e(url('assets/js/windows-reader.js')) ?>"></script>
