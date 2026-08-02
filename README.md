@@ -14,6 +14,8 @@ php -S 127.0.0.1:8080 -t public public/index.php
 
 Abra `http://127.0.0.1:8080`. El panel siempre abre primero el login. Sin MySQL puede ingresar con `admin@quasar.local` y la contraseña definida en `ADMIN_PASSWORD` (`quasar123` de forma local). En producción debe cambiar esa contraseña.
 
+En Apache también funciona dentro de un subdirectorio, por ejemplo `http://localhost/quasar/`: el `.htaccess` raíz prioriza PHP sobre `index.html`, abre el login y conserva `/quasar` en formularios, recursos y redirecciones. Después del acceso se muestra siempre el dashboard; si todavía no hay mediciones, sus paneles permanecen visibles con contadores en cero y el gráfico indica “Sin mediciones disponibles”.
+
 ## Arquitectura
 
 - `public/index.php`: front controller y rutas.
@@ -36,13 +38,15 @@ Después de importar `database/schema.sql`, cree o actualice el superusuario eje
 php database/create_superuser.php admin@quasar.local 'una-clave-segura' 'Superusuario'
 ```
 
-Si la base de datos **ya está en uso**, no vuelva a importar el esquema. Actualice el usuario existente con el script transaccional `database/update_user.php`; solamente modifica los campos indicados:
+La base completa actualizada para una instalación nueva se entrega en `database/quasar_updated.sql`.
+
+Si la base de datos **ya está en uso**, no vuelva a importar el esquema completo. Edite las variables iniciales de `database/update_user.sql` y ejecute solamente ese archivo SQL:
 
 ```bash
-php database/update_user.php --email=admin@quasar.local --name="Administrador principal" --password="una-clave-nueva-segura" --role=Superadministrador --enable
+mysql -u usuario -p quasar < database/update_user.sql
 ```
 
-También permite cambiar el correo con `--new-email`, desactivar con `--disable` y consultar todas las opciones mediante `php database/update_user.php --help`. La contraseña nunca se guarda en texto plano: el script genera `password_hash` antes de actualizarla.
+El SQL actualiza correo, nombre, rol, estado y `password_hash` dentro de una transacción, sin eliminar mediciones ni recrear tablas. El acceso inicial generado por los SQL es `admin@quasar.local` / `quasar123`; cambie esa contraseña después de ingresar.
 
 ## Módulo de lectura para Windows
 

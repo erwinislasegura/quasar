@@ -6,3 +6,14 @@ CREATE TABLE equipos (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, nombre VARC
 CREATE TABLE archivos (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, equipo_id BIGINT UNSIGNED NOT NULL, nombre VARCHAR(255) NOT NULL, checksum CHAR(64) NOT NULL UNIQUE, estado VARCHAR(30) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (equipo_id) REFERENCES equipos(id));
 CREATE TABLE mediciones (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, archivo_id BIGINT UNSIGNED NOT NULL, equipo_id BIGINT UNSIGNED NOT NULL, measured_at DATETIME NOT NULL, tsf DECIMAL(16,6) NOT NULL, razon_oa DECIMAL(16,6) NOT NULL, conductividad DECIMAL(16,6) NOT NULL, estado VARCHAR(30) NOT NULL, archivo VARCHAR(255) NOT NULL, equipo VARCHAR(120) NOT NULL, INDEX (measured_at), FOREIGN KEY (archivo_id) REFERENCES archivos(id), FOREIGN KEY (equipo_id) REFERENCES equipos(id));
 CREATE TABLE auditoria (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, usuario_id BIGINT UNSIGNED NULL, accion VARCHAR(160) NOT NULL, contexto JSON NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (usuario_id) REFERENCES usuarios(id));
+
+-- Superusuario inicial. Contraseña temporal: quasar123
+INSERT INTO roles (nombre)
+VALUES ('Superadministrador')
+ON DUPLICATE KEY UPDATE nombre = VALUES(nombre);
+
+INSERT INTO usuarios (rol_id, nombre, email, password_hash, activo)
+SELECT id, 'Superusuario', 'admin@quasar.local', '$2y$12$Mgmd.52LWU.MtqLAHhGOu.GwZ6p9nRHFdZ8f4lzG1ivPMd1DNFT9a', 1
+FROM roles
+WHERE nombre = 'Superadministrador'
+ON DUPLICATE KEY UPDATE rol_id = VALUES(rol_id), nombre = VALUES(nombre), password_hash = VALUES(password_hash), activo = 1;

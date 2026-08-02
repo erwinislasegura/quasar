@@ -9,7 +9,10 @@ function e(mixed $value): string
 
 function url(string $path = ''): string
 {
-    return '/' . ltrim($path, '/');
+    $script = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+    $directory = rtrim(dirname($script), '/.');
+    if (str_ends_with($directory, '/public')) $directory = substr($directory, 0, -7);
+    return ($directory ?: '') . '/' . ltrim($path, '/');
 }
 
 function view(string $view, array $data = [], string $layout = 'admin'): void
@@ -33,4 +36,3 @@ function csrf_token(): string
     }
     return $_SESSION['_csrf'];
 }
-

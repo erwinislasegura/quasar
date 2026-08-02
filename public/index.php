@@ -18,6 +18,9 @@ spl_autoload_register(static function (string $class): void {
 });
 
 $path = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/', '/') ?: '/';
+$basePath = rtrim(dirname(str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '')), '/.');
+if (str_ends_with($basePath, '/public')) $basePath = substr($basePath, 0, -7);
+if ($basePath !== '' && ($path === $basePath || str_starts_with($path, $basePath . '/'))) $path = substr($path, strlen($basePath)) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($path === '/login' && $method === 'GET') { view('auth/login', ['title' => 'Acceso'], 'auth'); return; }
@@ -34,11 +37,11 @@ if ($path === '/login' && $method === 'POST') {
         $user = ['nombre' => 'Superusuario', 'email' => 'admin@quasar.local', 'password_hash' => password_hash(getenv('ADMIN_PASSWORD') ?: 'quasar123', PASSWORD_DEFAULT), 'rol' => 'Superadministrador'];
     }
     if ($user !== null && password_verify((string) ($_POST['password'] ?? ''), $user['password_hash'])) {
-        session_regenerate_id(true); $_SESSION['user'] = ['name' => $user['nombre'], 'email' => $user['email'], 'role' => $user['rol']]; header('Location: /'); return;
+        session_regenerate_id(true); $_SESSION['user'] = ['name' => $user['nombre'], 'email' => $user['email'], 'role' => $user['rol']]; header('Location: ' . url()); return;
     }
-    $_SESSION['flashes']['error'] = 'Las credenciales no son correctas.'; header('Location: /login'); return;
+    $_SESSION['flashes']['error'] = 'Las credenciales no son correctas.'; header('Location: ' . url('login')); return;
 }
-if ($path === '/logout') { $_SESSION = []; session_destroy(); header('Location: /login'); return; }
+if ($path === '/logout') { $_SESSION = []; session_destroy(); header('Location: ' . url('login')); return; }
 
 if ($path === '/api/measurements' && $method === 'POST') {
     if (!hash_equals(getenv('AGENT_API_KEY') ?: 'change-this-agent-key', $_SERVER['HTTP_X_API_KEY'] ?? '')) { http_response_code(401); echo json_encode(['error' => 'No autorizado']); return; }
@@ -50,9 +53,9 @@ if ($path === '/api/measurements' && $method === 'POST') {
 }
 
 // El panel siempre requiere una sesión iniciada.
-if (empty($_SESSION['user'])) { header('Location: /login'); return; }
+if (empty($_SESSION['user'])) { header('Location: ' . url('login')); return; }
 
-if ($path === '/') { require dirname(__DIR__) . '/index.php'; return; }
+if ($path === '/') { define('QUASAR_ROUTED', true); require dirname(__DIR__) . '/index.php'; return; }
 if ($path === '/windows-agent') {
     view('windows-agent/index', ['title' => 'Agente Windows', 'subtitle' => 'Despliegue del módulo de lectura local', 'active' => 'equipos']);
     return;

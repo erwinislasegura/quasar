@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+if (!defined('QUASAR_ROUTED') && PHP_SAPI !== 'cli') {
+    require __DIR__ . '/public/index.php';
+    return;
+}
+
+require_once __DIR__ . '/app/Core/helpers.php';
 require_once __DIR__ . '/app/Models/MeasurementRepository.php';
 
 /**
@@ -684,6 +690,7 @@ $mediciones = $conexion instanceof PDO
 </head>
 <body>
   <div class="overlay" id="overlay"></div>
+  <div class="app">
   <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-mark">
@@ -758,7 +765,7 @@ $mediciones = $conexion instanceof PDO
         <div class="last-update">
           Última lectura<br><strong id="lastReadText">—</strong>
         </div>
-        <a class="btn" href="/windows-agent" title="Desplegar módulo de lectura en Windows">
+        <a class="btn" href="<?= url('windows-agent') ?>" title="Desplegar módulo de lectura en Windows">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M4 5.5 11 4v7H4V5.5ZM13 3.6 20 2v9h-7V3.6ZM4 13h7v7l-7-1.5V13ZM13 13h7v9l-7-1.6V13Z"/>
           </svg>
@@ -973,6 +980,7 @@ $mediciones = $conexion instanceof PDO
       </section>
     </div>
   </main>
+  </div>
 
   <div class="tooltip" id="tooltip"></div>
 
@@ -1032,6 +1040,16 @@ $mediciones = $conexion instanceof PDO
       const validConductivity = RAW_DATA.filter(item => item.conductividad >= 0);
       const invalidConductivity = RAW_DATA.filter(item => item.conductividad < 0);
       const uniqueDates = [...new Set(RAW_DATA.map(item => item.fecha))];
+
+      if (!RAW_DATA.length) {
+        els.totalRecords.textContent = '0';
+        els.dateCount.textContent = '0 fechas diferentes';
+        els.validPercent.textContent = '0%';
+        els.heroFileMeta.textContent = 'Sin líneas procesadas';
+        els.lastReadText.textContent = 'Sin datos';
+        els.qualityChart.style.setProperty('--valid-angle', '0deg');
+        return;
+      }
 
       els.totalRecords.textContent = RAW_DATA.length;
       els.dateCount.textContent = `${uniqueDates.length} fechas diferentes`;
@@ -1211,6 +1229,15 @@ $mediciones = $conexion instanceof PDO
 
       const ctx = canvas.getContext('2d');
       ctx.scale(dpr, dpr);
+
+      if (!RAW_DATA.length) {
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        ctx.fillStyle = '#8a96a8';
+        ctx.font = '11px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('Sin mediciones disponibles', rect.width / 2, rect.height / 2);
+        return;
+      }
 
       const width = rect.width;
       const height = rect.height;
