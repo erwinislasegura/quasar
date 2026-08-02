@@ -5,6 +5,7 @@
 .alert.success { color:var(--success);border-color:#bfe8d7;background:var(--success-soft) }.alert.error { color:var(--danger);border-color:#f2c4cb;background:var(--danger-soft) }
 .module-actions { display:flex;gap:8px }.text-link { color:var(--primary);text-decoration:none;font-weight:750 }.footer { padding:22px 0 0;color:var(--muted);font-size:10px;text-align:center }
 .login-page { min-height:100vh;display:grid;place-items:center;background:var(--bg);padding:20px }.login-card { width:min(390px,100%);background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);padding:28px }.login-card .brand { background:var(--sidebar);margin:-28px -28px 24px;padding:20px 24px }.login-card h1 { font-size:18px;margin:0 0 6px }.login-card p { color:var(--muted);font-size:11px;margin:0 0 20px }.form-row { display:grid;gap:6px;margin-bottom:13px }.form-row label { font-size:10px;font-weight:800 }.form-row input { height:41px;border:1px solid var(--border);background:var(--panel-soft);padding:0 12px;outline:none }.login-card .btn { width:100%;border-radius:0 }
+@media (max-width:700px){.reader-form{grid-template-columns:1fr}.reader-file-box{align-items:stretch;flex-direction:column}}
 @media(max-width:680px){.user-chip{display:none}}
 .login-eyebrow { display:block;color:var(--primary);font-size:9px;font-weight:850;letter-spacing:1.2px;margin-bottom:8px }
 .login-status { display:flex;align-items:center;justify-content:center;gap:9px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:10px }

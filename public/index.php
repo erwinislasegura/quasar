@@ -56,7 +56,7 @@ if ($path === '/api/measurements' && $method === 'POST') {
     $connect = require dirname(__DIR__) . '/config/database.php';
     $pdo = $connect();
     if ($pdo instanceof PDO) {
-        $identifier = trim((string) ($payload['equipmentId'] ?? 'windows-agent-01'));
+        $identifier = trim((string) ($payload['equipmentId'] ?? 'windows-reader-01'));
         $equipmentName = trim((string) ($payload['equipmentName'] ?? 'Analizador Windows 01'));
         $pdo->beginTransaction();
         try {
@@ -92,27 +92,21 @@ if ($path === '/api/measurements' && $method === 'POST') {
     header('Content-Type: application/json'); http_response_code(201); echo json_encode(['status' => 'created', 'storage' => $pdo instanceof PDO ? 'mysql' : 'txt']); return;
 }
 
+if ($path === '/api/agent/status' && $method === 'GET') {
+    header('Content-Type: application/json');
+    if (!hash_equals(getenv('AGENT_API_KEY') ?: 'change-this-agent-key', $_SERVER['HTTP_X_API_KEY'] ?? '')) {
+        http_response_code(401); echo json_encode(['error' => 'No autorizado']); return;
+    }
+    echo json_encode(['status' => 'ok', 'serverTime' => gmdate('c')]); return;
+}
+
 // El panel siempre requiere una sesión iniciada.
 if (empty($_SESSION['user'])) { header('Location: ' . url('login')); return; }
 
 if ($path === '/') { define('QUASAR_ROUTED', true); require dirname(__DIR__) . '/index.php'; return; }
-if ($path === '/windows-agent') {
-    view('windows-agent/index', ['title' => 'Agente Windows', 'subtitle' => 'Despliegue del módulo de lectura local', 'active' => 'equipos']);
-    return;
-}
-if ($path === '/windows-agent/download') {
-    $downloads = [
-        'agent' => ['QuasarAgent.ps1', 'text/plain; charset=utf-8'],
-        'config' => ['config.example.json', 'application/json'],
-    ];
-    $download = $downloads[$_GET['file'] ?? ''] ?? null;
-    if ($download === null) { http_response_code(404); exit('Archivo no encontrado'); }
-    [$filename, $contentType] = $download;
-    $file = dirname(__DIR__) . '/windows-agent/' . $filename;
-    header('Content-Type: ' . $contentType);
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Content-Length: ' . filesize($file));
-    readfile($file);
+if ($path === '/windows-agent') { header('Location: ' . url('windows-reader'), true, 301); return; }
+if ($path === '/windows-reader') {
+    view('windows-reader/index', ['title' => 'Lector Windows', 'subtitle' => 'Lectura visual del archivo local', 'active' => 'windows-reader']);
     return;
 }
 if ($path === '/configuracion') {
@@ -127,7 +121,7 @@ if ($path === '/configuracion') {
 $modules = [
     'mediciones' => ['key'=>'mediciones','title'=>'Mediciones','subtitle'=>'Consulta de variables procesadas'],
     'archivos' => ['key'=>'archivos','title'=>'Archivos','subtitle'=>'Archivos recibidos y procesados'],
-    'equipos' => ['key'=>'equipos','title'=>'Equipos','subtitle'=>'Estado de los agentes locales'],
+    'equipos' => ['key'=>'equipos','title'=>'Equipos','subtitle'=>'Estado de los lectores conectados'],
     'usuarios' => ['key'=>'usuarios','title'=>'Usuarios','subtitle'=>'Administración de accesos'],
     'roles' => ['key'=>'roles','title'=>'Roles','subtitle'=>'Perfiles de acceso del sistema'],
     'permisos' => ['key'=>'permisos','title'=>'Permisos','subtitle'=>'Acciones disponibles por rol'],
