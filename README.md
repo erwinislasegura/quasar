@@ -57,6 +57,8 @@ mysql -u usuario -p quasar < update_modules.sql
 
 `update_modules.sql` es idempotente: crea la tabla `modulos`, registra las once opciones del sidebar, crea un permiso `*.view` para cada una y lo asigna al rol `Superadministrador` sin borrar información existente.
 
+Los módulos administrativos no contienen filas de demostración: Usuarios, Roles, Permisos, Equipos, Archivos, Errores y Auditoría consultan directamente sus tablas MySQL. Mediciones consulta MySQL o `Analisis.txt` según el almacenamiento activo. Las búsquedas y filtros operan sobre los registros cargados; si MySQL no está configurado, el módulo lo informa y permanece vacío en vez de inventar información.
+
 ## Módulo de lectura para Windows
 
 El agente solicitado está en `windows-agent/QuasarAgent.ps1`. Su instalación y configuración se explican en `windows-agent/README.md`. El agente lee las nuevas líneas del TXT, conserva su posición y las envía a `POST /api/measurements` usando la clave `AGENT_API_KEY`.

@@ -14,6 +14,14 @@ CREATE TABLE IF NOT EXISTS modulos (
     activo BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+CREATE TABLE IF NOT EXISTS errores (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    origen VARCHAR(120) NOT NULL,
+    detalle TEXT NOT NULL,
+    estado VARCHAR(30) NOT NULL DEFAULT 'Pendiente',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT INTO modulos (clave, nombre, ruta, seccion, orden, activo) VALUES
 ('dashboard', 'Dashboard', '/', 'Principal', 10, 1),
 ('mediciones', 'Mediciones', '/mediciones', 'Gestión', 20, 1),

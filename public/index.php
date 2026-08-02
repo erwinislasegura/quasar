@@ -37,6 +37,10 @@ if ($path === '/login' && $method === 'POST') {
         $user = ['nombre' => 'Superusuario', 'email' => 'admin@quasar.local', 'password_hash' => password_hash(getenv('ADMIN_PASSWORD') ?: 'quasar123', PASSWORD_DEFAULT), 'rol' => 'Superadministrador'];
     }
     if ($user !== null && password_verify((string) ($_POST['password'] ?? ''), $user['password_hash'])) {
+        if ($pdo instanceof PDO) {
+            $audit = $pdo->prepare('INSERT INTO auditoria (usuario_id, accion, contexto) SELECT id, :accion, :contexto FROM usuarios WHERE email = :email');
+            $audit->execute(['accion' => 'Inicio de sesión', 'contexto' => json_encode(['ip' => $_SERVER['REMOTE_ADDR'] ?? null]), 'email' => $user['email']]);
+        }
         session_regenerate_id(true); $_SESSION['user'] = ['name' => $user['nombre'], 'email' => $user['email'], 'role' => $user['rol']]; header('Location: ' . url()); return;
     }
     $_SESSION['flashes']['error'] = 'Las credenciales no son correctas.'; header('Location: ' . url('login')); return;
