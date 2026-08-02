@@ -758,6 +758,12 @@ $mediciones = $conexion instanceof PDO
         <div class="last-update">
           Última lectura<br><strong id="lastReadText">—</strong>
         </div>
+        <a class="btn" href="/windows-agent" title="Desplegar módulo de lectura en Windows">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M4 5.5 11 4v7H4V5.5ZM13 3.6 20 2v9h-7V3.6ZM4 13h7v7l-7-1.5V13ZM13 13h7v9l-7-1.6V13Z"/>
+          </svg>
+          <span>Desplegar agente</span>
+        </a>
         <button class="btn" id="exportButton">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 19h14"/>

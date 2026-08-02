@@ -53,6 +53,25 @@ if ($path === '/api/measurements' && $method === 'POST') {
 if (empty($_SESSION['user'])) { header('Location: /login'); return; }
 
 if ($path === '/') { require dirname(__DIR__) . '/index.php'; return; }
+if ($path === '/windows-agent') {
+    view('windows-agent/index', ['title' => 'Agente Windows', 'subtitle' => 'Despliegue del módulo de lectura local', 'active' => 'equipos']);
+    return;
+}
+if ($path === '/windows-agent/download') {
+    $downloads = [
+        'agent' => ['QuasarAgent.ps1', 'text/plain; charset=utf-8'],
+        'config' => ['config.example.json', 'application/json'],
+    ];
+    $download = $downloads[$_GET['file'] ?? ''] ?? null;
+    if ($download === null) { http_response_code(404); exit('Archivo no encontrado'); }
+    [$filename, $contentType] = $download;
+    $file = dirname(__DIR__) . '/windows-agent/' . $filename;
+    header('Content-Type: ' . $contentType);
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Content-Length: ' . filesize($file));
+    readfile($file);
+    return;
+}
 $modules = [
     'mediciones' => ['key'=>'mediciones','title'=>'Mediciones','subtitle'=>'Consulta de variables procesadas'],
     'archivos' => ['key'=>'archivos','title'=>'Archivos','subtitle'=>'Archivos recibidos y procesados'],
