@@ -227,6 +227,7 @@
     .btn svg { width: 17px; height: 17px; }
 
     .reader-form { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:20px 22px }
+    .reader-form [hidden] { display:none!important }
     .reader-form label { display:grid;gap:7px;color:var(--muted);font-size:11px;font-weight:700 }
     .reader-form input,.reader-form select { width:100%;height:42px;border:1px solid var(--border);border-radius:9px;background:var(--panel-soft);padding:0 12px;color:var(--text) }
     .reader-file-box { margin:0 22px 18px;padding:16px;border:1px dashed #b8c7da;border-radius:12px;background:var(--panel-soft);display:flex;align-items:center;justify-content:space-between;gap:16px }
@@ -235,6 +236,9 @@
     .reader-stats { padding:0 22px 22px }.reader-stats .range-card { box-shadow:none }.reader-stats small { display:block;color:var(--muted);margin-bottom:7px }.reader-stats b { font-size:16px }
     .reader-stats-four { grid-template-columns:repeat(4,minmax(0,1fr)) }
     .reader-form label small { font-weight:500 }
+    .reader-help { margin:18px 22px 0;padding:15px 17px;border:1px solid #cfe0f8;border-radius:12px;background:var(--primary-soft);color:var(--text);font-size:11px;line-height:1.55 }
+    .reader-help ul { margin:8px 0 0;padding-left:18px }.reader-help li+li { margin-top:4px }
+    .reader-input-action { display:flex;gap:8px }.reader-input-action input { min-width:0;flex:1 }.reader-input-action .btn { flex:0 0 auto }
 
     .content { padding-top: 24px; }
 

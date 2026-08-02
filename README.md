@@ -62,3 +62,5 @@ Los módulos administrativos no contienen filas de demostración: Usuarios, Role
 ## Módulo de lectura para Windows
 
 El panel ofrece un **Lector Windows** en `/windows-reader`. En cada computador Windows se abre la página con Microsoft Edge o Google Chrome, se selecciona `Analisis.txt` y se mantiene la pestaña abierta; no requiere instalar agentes, servicios ni tareas programadas. El navegador conserva la última línea confirmada y envía únicamente las líneas nuevas a `POST /api/measurements` usando la clave `AGENT_API_KEY`.
+
+El nombre del equipo es una descripción elegida por el usuario. El identificador se crea una sola vez para cada computador (la pantalla permite generarlo) y no debe ser un correo. La clave de conexión es el valor secreto de `AGENT_API_KEY` configurado por el administrador en el entorno del servidor; no se genera ni se muestra en el navegador.

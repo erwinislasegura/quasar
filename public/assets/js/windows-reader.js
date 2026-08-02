@@ -7,6 +7,7 @@
     name: get('readerEquipmentName'), id: get('readerEquipmentId'), key: get('readerApiKey'),
     interval: get('readerInterval'), customInterval: get('readerCustomInterval'),
     customIntervalField: get('readerCustomIntervalField'), file: get('readerFileName'), meta: get('readerFileMeta'),
+    generateId: get('readerGenerateId'),
     start: get('readerStart'), stop: get('readerStop'), reset: get('readerReset'), select: get('readerSelectFile'),
     message: get('readerMessage'), badge: get('readerBadge'), state: get('readerState'),
     sent: get('readerSent'), confirmed: get('readerConfirmed'), lastCheck: get('readerLastCheck')
@@ -77,6 +78,16 @@
     } catch (error) {
       if (error.name !== 'AbortError') setStatus('Error', `No se pudo abrir el archivo: ${error.message}`, 'error');
     }
+  });
+
+  fields.generateId.addEventListener('click', () => {
+    const randomPart = window.crypto?.randomUUID
+      ? window.crypto.randomUUID().slice(0, 8)
+      : Math.random().toString(36).slice(2, 10);
+    fields.id.value = `windows-${randomPart}`;
+    updateReady();
+    fields.id.focus();
+    setStatus('Detenido', 'Identificador creado. Puede conservarlo o escribir otro que sea único.');
   });
 
   async function check() {
