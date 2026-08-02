@@ -10,42 +10,44 @@ if (!defined('QUASAR_ROUTED') && PHP_SAPI !== 'cli') {
 require_once __DIR__ . '/app/Core/helpers.php';
 require_once __DIR__ . '/app/Models/MeasurementRepository.php';
 
-/**
- * Reads the real TXT source and exposes the same object shape expected by the
- * approved design's JavaScript. The reference HTML below remains unchanged.
- *
- * @return list<array{id:int,iso:string,fecha:string,hora:string,tiempo:float,razon:float,conductividad:float,archivo:string}>
- */
-function cargarMediciones(string $archivo): array
-{
-    $mediciones = [];
-    $lineas = is_file($archivo)
-        ? file($archivo, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)
-        : [];
+if (!function_exists('cargarMediciones')) {
+    /**
+     * Reads the real TXT source and exposes the same object shape expected by the
+     * approved design's JavaScript. The reference HTML below remains unchanged.
+     *
+     * @return list<array{id:int,iso:string,fecha:string,hora:string,tiempo:float,razon:float,conductividad:float,archivo:string}>
+     */
+    function cargarMediciones(string $archivo): array
+    {
+        $mediciones = [];
+        $lineas = is_file($archivo)
+            ? file($archivo, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)
+            : [];
 
-    foreach ($lineas ?: [] as $linea) {
-        $campos = str_getcsv($linea, ';');
-        if (count($campos) < 7) {
-            continue;
+        foreach ($lineas ?: [] as $linea) {
+            $campos = str_getcsv($linea, ';');
+            if (count($campos) < 7) {
+                continue;
+            }
+
+            if (!preg_match('/^(\\d{2})-(\\d{2})-(\\d{4})-(\\d{2}:\\d{2}:\\d{2})$/', $campos[0], $fecha)) {
+                continue;
+            }
+
+            $mediciones[] = [
+                'id' => count($mediciones) + 1,
+                'iso' => sprintf('%s-%s-%sT%s', $fecha[3], $fecha[2], $fecha[1], $fecha[4]),
+                'fecha' => sprintf('%s-%s-%s', $fecha[1], $fecha[2], $fecha[3]),
+                'hora' => $fecha[4],
+                'tiempo' => (float) str_replace(',', '.', $campos[2]),
+                'razon' => (float) str_replace(',', '.', $campos[4]),
+                'conductividad' => (float) str_replace(',', '.', $campos[6]),
+                'archivo' => basename($archivo),
+            ];
         }
 
-        if (!preg_match('/^(\\d{2})-(\\d{2})-(\\d{4})-(\\d{2}:\\d{2}:\\d{2})$/', $campos[0], $fecha)) {
-            continue;
-        }
-
-        $mediciones[] = [
-            'id' => count($mediciones) + 1,
-            'iso' => sprintf('%s-%s-%sT%s', $fecha[3], $fecha[2], $fecha[1], $fecha[4]),
-            'fecha' => sprintf('%s-%s-%s', $fecha[1], $fecha[2], $fecha[3]),
-            'hora' => $fecha[4],
-            'tiempo' => (float) str_replace(',', '.', $campos[2]),
-            'razon' => (float) str_replace(',', '.', $campos[4]),
-            'conductividad' => (float) str_replace(',', '.', $campos[6]),
-            'archivo' => basename($archivo),
-        ];
+        return $mediciones;
     }
-
-    return $mediciones;
 }
 
 $conectar = require __DIR__ . '/config/database.php';
