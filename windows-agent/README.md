@@ -4,7 +4,13 @@ Este es el módulo que ejecuta la lectura de `Analisis.txt` en el equipo Windows
 
 También puede desplegarlo desde el botón **Desplegar agente** del encabezado del dashboard. Ese botón abre una página protegida desde la que se descargan el script y la configuración.
 
-## Instalación guiada (recomendada)
+## Lector web (recomendado)
+
+No es necesario instalar un agente si puede mantener una ventana abierta en cada computador. Ingrese al panel desde Microsoft Edge o Google Chrome, abra **Agente Windows**, complete los datos, seleccione `Analisis.txt` y pulse **Iniciar lectura**. Por seguridad, el navegador solicita que el usuario seleccione el archivo; PHP no puede acceder directamente a archivos de otro computador. El servidor debe publicarse mediante HTTPS, ya que el selector continuo de archivos solo está disponible en contextos seguros (o en localhost).
+
+Mantenga la pestaña abierta. El lector comprueba el archivo periódicamente, conserva en el navegador la última línea confirmada y reintenta los errores de red. Después de reiniciar el computador o cerrar el navegador se debe volver a seleccionar el archivo.
+
+## Instalación como tarea de Windows (alternativa)
 
 1. Configure `AGENT_API_KEY` en el servidor PHP.
 2. Ingrese al panel, abra **Desplegar agente** y descargue `Instalar-Quasar.ps1` en cada computador.

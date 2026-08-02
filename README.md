@@ -61,4 +61,4 @@ Los módulos administrativos no contienen filas de demostración: Usuarios, Role
 
 ## Módulo de lectura para Windows
 
-El panel ofrece un instalador guiado de un solo archivo desde **Desplegar agente**. En cada computador Windows solicita cuatro datos, comprueba la conexión y registra el agente para iniciar automáticamente con el sistema. La instalación manual y el despliegue desatendido se documentan en `windows-agent/README.md`. El agente lee únicamente las líneas nuevas del TXT, conserva su posición y las envía a `POST /api/measurements` usando la clave `AGENT_API_KEY`.
+El panel ofrece un **lector web** desde el módulo de equipos. En cada computador Windows se abre la página con Microsoft Edge o Google Chrome, se selecciona `Analisis.txt` y se mantiene la pestaña abierta; no requiere instalar software. El navegador conserva la última línea confirmada y envía únicamente las líneas nuevas a `POST /api/measurements` usando la clave `AGENT_API_KEY`. El agente PowerShell permanece disponible como alternativa para equipos que deban operar sin una ventana abierta.
