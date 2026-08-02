@@ -1,0 +1,9 @@
+{
+  "sourceFile": "C:\\SistemaTXT\\Entrada\\Analisis.txt",
+  "apiUrl": "http://servidor-quasar/api/measurements",
+  "apiKey": "change-this-agent-key",
+  "equipmentId": "planta-equipo-01",
+  "equipmentName": "Analizador Windows 01",
+  "pollSeconds": 5,
+  "stateFile": "C:\\ProgramData\\QuasarAgent\\state.json"
+}
