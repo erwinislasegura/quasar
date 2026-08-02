@@ -17,7 +17,8 @@
     <label>Nombre del equipo<input id="readerEquipmentName" value="Equipo Windows" autocomplete="off"></label>
     <label>Identificador único<input id="readerEquipmentId" placeholder="Ejemplo: planta-equipo-01" autocomplete="off"></label>
     <label>Clave del agente<input id="readerApiKey" type="password" placeholder="AGENT_API_KEY" autocomplete="off"></label>
-    <label>Intervalo de lectura<select id="readerInterval"><option value="3">3 segundos</option><option value="5" selected>5 segundos</option><option value="10">10 segundos</option></select></label>
+    <label>Intervalo de lectura<select id="readerInterval"><option value="3">3 segundos</option><option value="5" selected>5 segundos</option><option value="10">10 segundos</option><option value="custom">Personalizado</option></select></label>
+    <label id="readerCustomIntervalField" hidden>Segundos personalizados<input id="readerCustomInterval" type="number" min="1" max="3600" value="15" inputmode="numeric"><small>Entre 1 y 3600 segundos</small></label>
   </div>
 
   <div class="reader-file-box">
@@ -32,9 +33,10 @@
   </div>
   <p class="reader-message" id="readerMessage">Complete los datos y seleccione el archivo.</p>
 
-  <div class="range-grid reader-stats">
+  <div class="range-grid reader-stats reader-stats-four">
     <div class="range-card"><small>Estado</small><b id="readerState">Detenido</b></div>
     <div class="range-card"><small>Líneas enviadas</small><b id="readerSent">0</b></div>
+    <div class="range-card"><small>Última línea confirmada</small><b id="readerConfirmed">0</b></div>
     <div class="range-card"><small>Última revisión</small><b id="readerLastCheck">—</b></div>
   </div>
 </section>

@@ -233,6 +233,8 @@
     .reader-file-box div { display:grid;gap:4px }.reader-file-box small,.reader-file-box span { color:var(--muted);font-size:11px }.reader-file-box strong { font-size:14px }
     .reader-actions { display:flex;gap:9px;padding:0 22px;flex-wrap:wrap }.reader-message { margin:14px 22px;color:var(--muted) }
     .reader-stats { padding:0 22px 22px }.reader-stats .range-card { box-shadow:none }.reader-stats small { display:block;color:var(--muted);margin-bottom:7px }.reader-stats b { font-size:16px }
+    .reader-stats-four { grid-template-columns:repeat(4,minmax(0,1fr)) }
+    .reader-form label small { font-weight:500 }
 
     .content { padding-top: 24px; }
 

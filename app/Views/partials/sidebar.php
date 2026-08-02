@@ -1,6 +1,6 @@
 <?php
 $menu = [
-  'Principal' => ['dashboard' => ['Panel', '/'], 'mediciones' => ['Mediciones', '/mediciones'], 'archivos' => ['Archivos', '/archivos'], 'equipos' => ['Equipos', '/equipos']],
+  'Principal' => ['dashboard' => ['Panel', '/'], 'mediciones' => ['Mediciones', '/mediciones'], 'archivos' => ['Archivos', '/archivos'], 'equipos' => ['Equipos', '/equipos'], 'windows-reader' => ['Lector Windows', '/windows-reader']],
   'Administración' => ['usuarios' => ['Usuarios', '/usuarios'], 'roles' => ['Roles', '/roles'], 'permisos' => ['Permisos', '/permisos']],
   'Sistema' => ['errores' => ['Errores', '/errores'], 'auditoria' => ['Auditoría', '/auditoria'], 'configuracion' => ['Configuración', '/configuracion']],
 ];
