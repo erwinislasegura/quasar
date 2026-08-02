@@ -92,6 +92,14 @@ if ($path === '/api/measurements' && $method === 'POST') {
     header('Content-Type: application/json'); http_response_code(201); echo json_encode(['status' => 'created', 'storage' => $pdo instanceof PDO ? 'mysql' : 'txt']); return;
 }
 
+if ($path === '/api/agent/status' && $method === 'GET') {
+    header('Content-Type: application/json');
+    if (!hash_equals(getenv('AGENT_API_KEY') ?: 'change-this-agent-key', $_SERVER['HTTP_X_API_KEY'] ?? '')) {
+        http_response_code(401); echo json_encode(['error' => 'No autorizado']); return;
+    }
+    echo json_encode(['status' => 'ok', 'serverTime' => gmdate('c')]); return;
+}
+
 // El panel siempre requiere una sesión iniciada.
 if (empty($_SESSION['user'])) { header('Location: ' . url('login')); return; }
 
@@ -113,6 +121,20 @@ if ($path === '/windows-agent/download') {
     header('Content-Disposition: attachment; filename="' . $filename . '"');
     header('Content-Length: ' . filesize($file));
     readfile($file);
+    return;
+}
+if ($path === '/windows-agent/installer') {
+    $template = file_get_contents(dirname(__DIR__) . '/windows-agent/Install-QuasarAgent.ps1');
+    $agent = file_get_contents(dirname(__DIR__) . '/windows-agent/QuasarAgent.ps1');
+    if ($template === false || $agent === false) { http_response_code(500); exit('No fue posible generar el instalador'); }
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $serverUrl = $scheme . '://' . $host . rtrim($basePath, '/');
+    $installer = str_replace(['__QUASAR_SERVER_URL__', '__QUASAR_AGENT_BASE64__'], [$serverUrl, base64_encode($agent)], $template);
+    header('Content-Type: text/plain; charset=utf-8');
+    header('Content-Disposition: attachment; filename="Instalar-Quasar.ps1"');
+    header('Content-Length: ' . strlen($installer));
+    echo $installer;
     return;
 }
 if ($path === '/configuracion') {

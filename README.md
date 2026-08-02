@@ -61,4 +61,4 @@ Los módulos administrativos no contienen filas de demostración: Usuarios, Role
 
 ## Módulo de lectura para Windows
 
-El agente solicitado está en `windows-agent/QuasarAgent.ps1`. Su instalación y configuración se explican en `windows-agent/README.md`. El agente lee las nuevas líneas del TXT, conserva su posición y las envía a `POST /api/measurements` usando la clave `AGENT_API_KEY`.
+El panel ofrece un instalador guiado de un solo archivo desde **Desplegar agente**. En cada computador Windows solicita cuatro datos, comprueba la conexión y registra el agente para iniciar automáticamente con el sistema. La instalación manual y el despliegue desatendido se documentan en `windows-agent/README.md`. El agente lee únicamente las líneas nuevas del TXT, conserva su posición y las envía a `POST /api/measurements` usando la clave `AGENT_API_KEY`.
