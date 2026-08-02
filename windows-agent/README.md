@@ -12,4 +12,4 @@ También puede desplegarlo desde el botón **Desplegar agente** del encabezado d
 powershell.exe -ExecutionPolicy Bypass -File .\QuasarAgent.ps1
 ```
 
-El agente recuerda la última línea enviada en `C:\ProgramData\QuasarAgent\state.json`, revisa el archivo cada cinco segundos y reintenta después de errores de red.
+El agente recuerda la última línea enviada en `C:\ProgramData\QuasarAgent\state.json`, revisa el archivo cada cinco segundos y reintenta después de errores de red. Cada solicitud incluye la línea, `equipmentId` y `equipmentName`. El servidor valida la API key y el formato; con MySQL guarda el equipo, archivo y medición en una transacción, y sin MySQL agrega la línea a `Analisis.txt`.

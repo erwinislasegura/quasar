@@ -732,6 +732,22 @@ $mediciones = $conexion instanceof PDO
       </a>
     </nav>
 
+    <div class="nav-label">Gestión</div>
+    <nav class="nav">
+      <a href="<?= url('mediciones') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Mediciones</a>
+      <a href="<?= url('archivos') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4zM8 8h8M8 12h8"/></svg>Archivos</a>
+      <a href="<?= url('equipos') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="12"/><path d="M8 21h8M12 17v4"/></svg>Equipos</a>
+      <a href="<?= url('windows-agent') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5 11 4v7H4ZM13 3.6 20 2v9h-7ZM4 13h7v7l-7-1.5ZM13 13h7v9l-7-1.6Z"/></svg>Agente Windows</a>
+    </nav>
+
+    <div class="nav-label">Administración</div>
+    <nav class="nav">
+      <a href="<?= url('usuarios') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 8h5M19.5 5.5v5"/></svg>Usuarios</a>
+      <a href="<?= url('roles') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7Z"/></svg>Roles</a>
+      <a href="<?= url('permisos') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="12" r="4"/><path d="m12 12 9-9M17 3h4v4"/></svg>Permisos</a>
+      <a href="<?= url('auditoria') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3h14v18H5zM8 8h8M8 12h8M8 16h5"/></svg>Auditoría</a>
+    </nav>
+
     <div class="nav-label">Sistema</div>
     <nav class="nav">
       <a href="#fuente">
@@ -740,12 +756,14 @@ $mediciones = $conexion instanceof PDO
         </svg>
         Archivo fuente
       </a>
-      <a href="#configuracion">
+      <a href="<?= url('errores') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2.5 20h19ZM12 9v5M12 17h.01"/></svg>Errores</a>
+      <a href="<?= url('configuracion') ?>">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.17.38.4.73.71 1 .3.27.7.4 1.1.4h.1v4h-.1a1.7 1.7 0 0 0-1.81.6Z"/>
         </svg>
         Configuración
       </a>
+      <a href="<?= url('logout') ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 4H4v16h6M14 8l4 4-4 4M8 12h10"/></svg>Cerrar sesión</a>
     </nav>
 
     <div class="source-card" id="fuente">

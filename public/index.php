@@ -47,9 +47,45 @@ if ($path === '/api/measurements' && $method === 'POST') {
     if (!hash_equals(getenv('AGENT_API_KEY') ?: 'change-this-agent-key', $_SERVER['HTTP_X_API_KEY'] ?? '')) { http_response_code(401); echo json_encode(['error' => 'No autorizado']); return; }
     $payload = json_decode(file_get_contents('php://input') ?: '', true);
     $line = trim((string) ($payload['line'] ?? ''));
-    if (!preg_match('/^\d{2}-\d{2}-\d{4}-\d{2}:\d{2}:\d{2};Tiempo;-?\d+[,.]\d+;Razon;-?\d+[,.]\d+;Conductividad;-?\d+[,.]\d+$/', $line)) { http_response_code(422); echo json_encode(['error' => 'Línea inválida']); return; }
-    file_put_contents(dirname(__DIR__) . '/Analisis.txt', $line . PHP_EOL, FILE_APPEND | LOCK_EX);
-    header('Content-Type: application/json'); http_response_code(201); echo json_encode(['status' => 'created']); return;
+    if (!preg_match('/^(\d{2})-(\d{2})-(\d{4})-(\d{2}:\d{2}:\d{2});Tiempo;(-?\d+[,.]\d+);Razon;(-?\d+[,.]\d+);Conductividad;(-?\d+[,.]\d+)$/', $line, $fields)) { http_response_code(422); echo json_encode(['error' => 'Línea inválida']); return; }
+
+    $connect = require dirname(__DIR__) . '/config/database.php';
+    $pdo = $connect();
+    if ($pdo instanceof PDO) {
+        $identifier = trim((string) ($payload['equipmentId'] ?? 'windows-agent-01'));
+        $equipmentName = trim((string) ($payload['equipmentName'] ?? 'Analizador Windows 01'));
+        $pdo->beginTransaction();
+        try {
+            $equipment = $pdo->prepare('INSERT INTO equipos (nombre, identificador, conectado, last_seen_at) VALUES (:nombre, :identificador, 1, NOW()) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id), nombre = VALUES(nombre), conectado = 1, last_seen_at = NOW()');
+            $equipment->execute(['nombre' => $equipmentName, 'identificador' => $identifier]);
+            $equipmentId = (int) $pdo->lastInsertId();
+            $checksum = hash('sha256', $identifier . '|' . $line);
+            $file = $pdo->prepare("INSERT INTO archivos (equipo_id, nombre, checksum, estado) VALUES (:equipo, 'Analisis.txt', :checksum, 'Procesado') ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)");
+            $file->execute(['equipo' => $equipmentId, 'checksum' => $checksum]);
+            $fileId = (int) $pdo->lastInsertId();
+            $exists = $pdo->prepare('SELECT 1 FROM mediciones WHERE archivo_id = :archivo LIMIT 1');
+            $exists->execute(['archivo' => $fileId]);
+            if (!$exists->fetchColumn()) {
+                $measurement = $pdo->prepare("INSERT INTO mediciones (archivo_id, equipo_id, measured_at, tsf, razon_oa, conductividad, estado, archivo, equipo) VALUES (:archivo_id, :equipo_id, :fecha, :tsf, :razon, :conductividad, :estado, 'Analisis.txt', :equipo)");
+                $measurement->execute([
+                    'archivo_id' => $fileId, 'equipo_id' => $equipmentId,
+                    'fecha' => "{$fields[3]}-{$fields[2]}-{$fields[1]} {$fields[4]}",
+                    'tsf' => str_replace(',', '.', $fields[5]), 'razon' => str_replace(',', '.', $fields[6]),
+                    'conductividad' => str_replace(',', '.', $fields[7]),
+                    'estado' => (float) str_replace(',', '.', $fields[7]) < 0 ? 'Revisar' : 'Válido', 'equipo' => $equipmentName,
+                ]);
+            }
+            $pdo->commit();
+        } catch (Throwable $error) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            http_response_code(500); echo json_encode(['error' => 'No fue posible guardar la medición']); return;
+        }
+    } else {
+        $target = dirname(__DIR__) . '/Analisis.txt';
+        $current = is_file($target) ? file_get_contents($target) : '';
+        if (!str_contains((string) $current, $line)) file_put_contents($target, $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+    }
+    header('Content-Type: application/json'); http_response_code(201); echo json_encode(['status' => 'created', 'storage' => $pdo instanceof PDO ? 'mysql' : 'txt']); return;
 }
 
 // El panel siempre requiere una sesión iniciada.
@@ -73,6 +109,15 @@ if ($path === '/windows-agent/download') {
     header('Content-Disposition: attachment; filename="' . $filename . '"');
     header('Content-Length: ' . filesize($file));
     readfile($file);
+    return;
+}
+if ($path === '/configuracion') {
+    $connect = require dirname(__DIR__) . '/config/database.php';
+    view('configuracion/index', [
+        'title' => 'Configuración', 'subtitle' => 'Conexiones y servicios del sistema', 'active' => 'configuracion',
+        'databaseConnected' => $connect() instanceof PDO,
+        'agentKeyConfigured' => (getenv('AGENT_API_KEY') ?: '') !== '',
+    ]);
     return;
 }
 $modules = [

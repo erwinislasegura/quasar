@@ -21,7 +21,7 @@ while ($true) {
             $lines = @(Get-Content -Path $config.sourceFile)
             $position = [int](Read-State)
             for ($index = $position; $index -lt $lines.Count; $index++) {
-                $body = @{ line = $lines[$index] } | ConvertTo-Json -Compress
+                $body = @{ line = $lines[$index]; equipmentId = $config.equipmentId; equipmentName = $config.equipmentName } | ConvertTo-Json -Compress
                 Invoke-RestMethod -Method Post -Uri $config.apiUrl -Headers @{ 'X-API-Key' = $config.apiKey } -ContentType 'application/json' -Body $body | Out-Null
                 Write-State ($index + 1)
             }
