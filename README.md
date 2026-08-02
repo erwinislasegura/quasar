@@ -36,6 +36,14 @@ Después de importar `database/schema.sql`, cree o actualice el superusuario eje
 php database/create_superuser.php admin@quasar.local 'una-clave-segura' 'Superusuario'
 ```
 
+Si la base de datos **ya está en uso**, no vuelva a importar el esquema. Actualice el usuario existente con el script transaccional `database/update_user.php`; solamente modifica los campos indicados:
+
+```bash
+php database/update_user.php --email=admin@quasar.local --name="Administrador principal" --password="una-clave-nueva-segura" --role=Superadministrador --enable
+```
+
+También permite cambiar el correo con `--new-email`, desactivar con `--disable` y consultar todas las opciones mediante `php database/update_user.php --help`. La contraseña nunca se guarda en texto plano: el script genera `password_hash` antes de actualizarla.
+
 ## Módulo de lectura para Windows
 
 El agente solicitado está en `windows-agent/QuasarAgent.ps1`. Su instalación y configuración se explican en `windows-agent/README.md`. El agente lee las nuevas líneas del TXT, conserva su posición y las envía a `POST /api/measurements` usando la clave `AGENT_API_KEY`.
