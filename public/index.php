@@ -104,10 +104,12 @@ if ($path === '/api/agent/status' && $method === 'GET') {
 if (empty($_SESSION['user'])) { header('Location: ' . url('login')); return; }
 
 if ($path === '/') { define('QUASAR_ROUTED', true); require dirname(__DIR__) . '/index.php'; return; }
-if ($path === '/windows-agent') {
-    view('windows-agent/index', ['title' => 'Agente Windows', 'subtitle' => 'Despliegue del módulo de lectura local', 'active' => 'equipos']);
+if ($path === '/windows-reader') {
+    view('windows-agent/index', ['title' => 'Lector Windows', 'subtitle' => 'Lectura local desde Microsoft Edge o Google Chrome', 'active' => 'windows-reader']);
     return;
 }
+// Preserve bookmarks created before the browser reader got its definitive name.
+if ($path === '/windows-agent') { header('Location: ' . url('windows-reader')); return; }
 if ($path === '/windows-agent/download') {
     $downloads = [
         'agent' => ['QuasarAgent.ps1', 'text/plain; charset=utf-8'],
