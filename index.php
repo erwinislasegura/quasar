@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/app/Models/MeasurementRepository.php';
+
 /**
  * Reads the real TXT source and exposes the same object shape expected by the
  * approved design's JavaScript. The reference HTML below remains unchanged.
@@ -40,7 +42,11 @@ function cargarMediciones(string $archivo): array
     return $mediciones;
 }
 
-$mediciones = cargarMediciones(__DIR__ . '/Analisis.txt');
+$conectar = require __DIR__ . '/config/database.php';
+$conexion = $conectar();
+$mediciones = $conexion instanceof PDO
+    ? (new App\Models\MeasurementRepository($conexion))->all()
+    : cargarMediciones(__DIR__ . '/Analisis.txt');
 ?>
 <!DOCTYPE html>
 <html lang="es">
