@@ -10,15 +10,17 @@
 </head>
 <body>
   <div class="overlay" id="overlay"></div>
-  <?php require dirname(__DIR__) . '/partials/sidebar.php'; ?>
-  <main class="main">
-    <?php require dirname(__DIR__) . '/partials/header.php'; ?>
-    <div class="content">
-      <?php require dirname(__DIR__) . '/partials/alerts.php'; ?>
-      <?= $content ?>
-      <?php require dirname(__DIR__) . '/partials/footer.php'; ?>
-    </div>
-  </main>
+  <div class="app">
+    <?php require dirname(__DIR__) . '/partials/sidebar.php'; ?>
+    <main class="main">
+      <?php require dirname(__DIR__) . '/partials/header.php'; ?>
+      <div class="content">
+        <?php require dirname(__DIR__) . '/partials/alerts.php'; ?>
+        <?= $content ?>
+        <?php require dirname(__DIR__) . '/partials/footer.php'; ?>
+      </div>
+    </main>
+  </div>
   <div class="tooltip" id="tooltip"></div>
   <?php if (!empty($dashboardScripts)): ?>
     <script>window.QUASAR_DATA = <?= json_encode($records, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>;</script>
