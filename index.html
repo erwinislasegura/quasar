@@ -471,7 +471,7 @@
 
     table {
       width: 100%;
-      min-width: 940px;
+      min-width: 850px;
       border-collapse: collapse;
     }
 
@@ -728,7 +728,7 @@
         <div class="hero-copy">
           <small>Sistema operativo</small>
           <h2>Lectura y análisis automático de variables</h2>
-          <p>Cada registro muestra la Fecha y Hora exactas en que se midieron las variables Tiempo, Razón y Conductividad.</p>
+          <p>Visualización de Fecha, Hora, Tiempo, Razón y Conductividad, con detección de valores negativos y filtros para revisar cada medición.</p>
         </div>
         <div class="hero-file">
           <strong>Analisis.txt</strong>
@@ -757,7 +757,7 @@
             </svg>
           </div>
           <div>
-            <div class="kpi-label">Promedio variable Tiempo</div>
+            <div class="kpi-label">Tiempo promedio</div>
             <div class="kpi-value" id="avgTiempo">0</div>
             <div class="kpi-foot">Promedio general del archivo</div>
           </div>
@@ -795,7 +795,7 @@
           <div class="panel-head">
             <div class="panel-title">
               <h3>Evolución de las mediciones</h3>
-              <p>Cada punto corresponde a la fecha y hora exactas de la medición</p>
+              <p>Serie cronológica de Tiempo y Conductividad</p>
             </div>
             <div class="legend">
               <span class="legend-item"><i class="legend-dot" style="background:#2368e8"></i>Tiempo</span>
@@ -860,8 +860,8 @@
       <section class="panel table-panel" id="registros">
         <div class="panel-head">
           <div class="panel-title">
-            <h3>Mediciones registradas</h3>
-            <p>Variables: Fecha, Hora, Tiempo, Razón y Conductividad</p>
+            <h3>Detalle de registros</h3>
+            <p>Consulta, ordena y filtra todas las líneas procesadas</p>
           </div>
           <span class="badge ok" id="visibleBadge">0 visibles</span>
         </div>
@@ -897,8 +897,7 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th class="sortable" data-sort="fecha">Fecha ↕</th>
-                <th class="sortable" data-sort="hora">Hora ↕</th>
+                <th class="sortable" data-sort="iso">Fecha y hora ↕</th>
                 <th class="sortable" data-sort="tiempo">Tiempo ↕</th>
                 <th class="sortable" data-sort="razon">Razón ↕</th>
                 <th class="sortable" data-sort="conductividad">Conductividad ↕</th>
@@ -1077,8 +1076,7 @@
         return `
           <tr>
             <td class="row-index">${start + index + 1}</td>
-            <td class="date-cell"><strong>${item.fecha}</strong></td>
-            <td class="metric">${item.hora}</td>
+            <td class="date-cell"><strong>${item.fecha}</strong><span>${item.hora}</span></td>
             <td class="metric">${fmt(item.tiempo, 3)}</td>
             <td class="metric">${fmt(item.razon, 6)}</td>
             <td class="metric">${fmt(item.conductividad, 2)}</td>
@@ -1237,8 +1235,8 @@
         const item = meta.data[index];
 
         els.tooltip.innerHTML = `
-          <strong>Medición: ${item.fecha} a las ${item.hora}</strong><br>
-          Tiempo: ${fmt(item.tiempo,3)} · Razón: ${fmt(item.razon,6)} · Conductividad: ${fmt(item.conductividad,2)}
+          <strong>${item.fecha} ${item.hora}</strong><br>
+          Tiempo: ${fmt(item.tiempo,3)} · Conductividad: ${fmt(item.conductividad,2)}
         `;
         els.tooltip.style.left = `${event.clientX}px`;
         els.tooltip.style.top = `${event.clientY}px`;
@@ -1252,7 +1250,7 @@
 
     function exportCSV() {
       const data = sortData(state.filtered);
-      const header = ['Fecha','Hora','Tiempo','Razón','Conductividad','Estado','Archivo'];
+      const header = ['Fecha','Hora','Tiempo','Razon','Conductividad','Estado','Archivo'];
       const rows = data.map(item => [
         item.fecha,
         item.hora,
