@@ -13,11 +13,22 @@
     <span class="badge warn" id="readerBadge">Sin configurar</span>
   </div>
 
+  <div class="reader-help" role="note" aria-label="Cómo completar la configuración">
+    <strong>¿De dónde obtengo estos datos?</strong>
+    <ul>
+      <li><b>Nombre del equipo:</b> usted lo elige para reconocer el computador en el panel, por ejemplo <code>Laboratorio principal</code>.</li>
+      <li><b>Identificador único:</b> no es un correo ni una contraseña. Cree uno que no se repita, por ejemplo <code>planta-pc-01</code>, o use el botón <b>Generar</b>.</li>
+      <li><b>Clave de conexión:</b> debe solicitarla al administrador de Quasar. Es el valor privado configurado en el servidor como <code>AGENT_API_KEY</code>.</li>
+      <li><b>Intervalo:</b> elija cada cuánto revisar el TXT; se recomiendan 5 o 10 segundos.</li>
+    </ul>
+  </div>
+
   <div class="reader-form">
-    <label>Nombre del equipo<input id="readerEquipmentName" value="Equipo Windows" autocomplete="off"></label>
-    <label>Identificador único<input id="readerEquipmentId" placeholder="Ejemplo: planta-equipo-01" autocomplete="off"></label>
-    <label>Clave del agente<input id="readerApiKey" type="password" placeholder="AGENT_API_KEY" autocomplete="off"></label>
-    <label>Intervalo de lectura<select id="readerInterval"><option value="3">3 segundos</option><option value="5" selected>5 segundos</option><option value="10">10 segundos</option></select></label>
+    <label>Nombre del equipo<input id="readerEquipmentName" value="Equipo Windows" autocomplete="off"><small>Nombre descriptivo elegido por usted.</small></label>
+    <label>Identificador único<span class="reader-input-action"><input id="readerEquipmentId" placeholder="Ejemplo: planta-pc-01" autocomplete="off"><button class="btn" type="button" id="readerGenerateId">Generar</button></span><small>No use su correo. Debe ser distinto para cada computador.</small></label>
+    <label>Clave de conexión<input id="readerApiKey" type="password" placeholder="Solicítela al administrador" autocomplete="off"><small>Valor de <code>AGENT_API_KEY</code> configurado en el servidor.</small></label>
+    <label>Intervalo de lectura<select id="readerInterval"><option value="3">3 segundos</option><option value="5" selected>5 segundos</option><option value="10">10 segundos</option><option value="custom">Personalizado</option></select></label>
+    <label id="readerCustomIntervalField" hidden>Segundos personalizados<input id="readerCustomInterval" type="number" min="1" max="3600" value="15" inputmode="numeric"><small>Entre 1 y 3600 segundos</small></label>
   </div>
 
   <div class="reader-file-box">
@@ -32,9 +43,10 @@
   </div>
   <p class="reader-message" id="readerMessage">Complete los datos y seleccione el archivo.</p>
 
-  <div class="range-grid reader-stats">
+  <div class="range-grid reader-stats reader-stats-four">
     <div class="range-card"><small>Estado</small><b id="readerState">Detenido</b></div>
     <div class="range-card"><small>Líneas enviadas</small><b id="readerSent">0</b></div>
+    <div class="range-card"><small>Última línea confirmada</small><b id="readerConfirmed">0</b></div>
     <div class="range-card"><small>Última revisión</small><b id="readerLastCheck">—</b></div>
   </div>
 </section>

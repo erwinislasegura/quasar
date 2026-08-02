@@ -5,7 +5,7 @@
 
 <section class="range-grid">
   <article class="panel range-card"><div class="range-head"><strong>Base de datos</strong><span class="badge <?= $databaseConnected ? 'ok' : 'warn' ?>"><?= $databaseConnected ? 'Conectada' : 'Sin conexión' ?></span></div><div class="range-values"><div><small>Servidor</small><b><?= e(getenv('DB_HOST') ?: 'No configurado') ?></b></div></div><p class="kpi-foot">Se configura mediante las variables DB_* de <code>.env.example</code>.</p></article>
-  <article class="panel range-card"><div class="range-head"><strong>API del agente</strong><span class="badge <?= $agentKeyConfigured ? 'ok' : 'warn' ?>"><?= $agentKeyConfigured ? 'Protegida' : 'Clave predeterminada' ?></span></div><div class="range-values"><div><small>Endpoint</small><b>/api/measurements</b></div></div><a class="btn primary" href="<?= url('windows-agent') ?>">Configurar agente Windows</a></article>
+  <article class="panel range-card"><div class="range-head"><strong>API del lector</strong><span class="badge <?= $agentKeyConfigured ? 'ok' : 'warn' ?>"><?= $agentKeyConfigured ? 'Protegida' : 'Debe configurarse' ?></span></div><div class="range-values"><div><small>Endpoint</small><b>/api/measurements</b></div></div><a class="btn primary" href="<?= url('windows-reader') ?>">Abrir Lector Windows</a></article>
   <article class="panel range-card"><div class="range-head"><strong>Archivo local</strong><span class="badge ok">Disponible</span></div><div class="range-values"><div><small>Ruta</small><b>Analisis.txt</b></div></div><p class="kpi-foot">Se utiliza automáticamente cuando MySQL no está configurado.</p></article>
 </section>
 

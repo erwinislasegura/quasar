@@ -48,7 +48,8 @@ if ($path === '/login' && $method === 'POST') {
 if ($path === '/logout') { $_SESSION = []; session_destroy(); header('Location: ' . url('login')); return; }
 
 if ($path === '/api/measurements' && $method === 'POST') {
-    if (!hash_equals(getenv('AGENT_API_KEY') ?: 'change-this-agent-key', $_SERVER['HTTP_X_API_KEY'] ?? '')) { http_response_code(401); echo json_encode(['error' => 'No autorizado']); return; }
+    $agentApiKey = (string) (getenv('AGENT_API_KEY') ?: '');
+    if ($agentApiKey === '' || !hash_equals($agentApiKey, $_SERVER['HTTP_X_API_KEY'] ?? '')) { http_response_code(401); echo json_encode(['error' => 'No autorizado']); return; }
     $payload = json_decode(file_get_contents('php://input') ?: '', true);
     $line = trim((string) ($payload['line'] ?? ''));
     if (!preg_match('/^(\d{2})-(\d{2})-(\d{4})-(\d{2}:\d{2}:\d{2});Tiempo;(-?\d+[,.]\d+);Razon;(-?\d+[,.]\d+);Conductividad;(-?\d+[,.]\d+)$/', $line, $fields)) { http_response_code(422); echo json_encode(['error' => 'Línea inválida']); return; }
@@ -94,7 +95,8 @@ if ($path === '/api/measurements' && $method === 'POST') {
 
 if ($path === '/api/agent/status' && $method === 'GET') {
     header('Content-Type: application/json');
-    if (!hash_equals(getenv('AGENT_API_KEY') ?: 'change-this-agent-key', $_SERVER['HTTP_X_API_KEY'] ?? '')) {
+    $agentApiKey = (string) (getenv('AGENT_API_KEY') ?: '');
+    if ($agentApiKey === '' || !hash_equals($agentApiKey, $_SERVER['HTTP_X_API_KEY'] ?? '')) {
         http_response_code(401); echo json_encode(['error' => 'No autorizado']); return;
     }
     echo json_encode(['status' => 'ok', 'serverTime' => gmdate('c')]); return;
@@ -104,10 +106,12 @@ if ($path === '/api/agent/status' && $method === 'GET') {
 if (empty($_SESSION['user'])) { header('Location: ' . url('login')); return; }
 
 if ($path === '/') { define('QUASAR_ROUTED', true); require dirname(__DIR__) . '/index.php'; return; }
-if ($path === '/windows-agent') {
-    view('windows-agent/index', ['title' => 'Agente Windows', 'subtitle' => 'Despliegue del módulo de lectura local', 'active' => 'equipos']);
+if ($path === '/windows-reader') {
+    view('windows-agent/index', ['title' => 'Lector Windows', 'subtitle' => 'Lectura local desde Microsoft Edge o Google Chrome', 'active' => 'windows-reader']);
     return;
 }
+// Preserve bookmarks created before the browser reader got its definitive name.
+if ($path === '/windows-agent') { header('Location: ' . url('windows-reader')); return; }
 if ($path === '/windows-agent/download') {
     $downloads = [
         'agent' => ['QuasarAgent.ps1', 'text/plain; charset=utf-8'],
