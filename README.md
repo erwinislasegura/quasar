@@ -64,3 +64,24 @@ Los módulos administrativos no contienen filas de demostración: Usuarios, Role
 El panel ofrece un **Lector Windows** en `/windows-reader`. En cada computador Windows se abre la página con Microsoft Edge o Google Chrome, se selecciona `Analisis.txt` y se mantiene la pestaña abierta; no requiere instalar agentes, servicios ni tareas programadas. El navegador conserva la última línea confirmada y envía únicamente las líneas nuevas a `POST /api/measurements` usando la clave `AGENT_API_KEY`.
 
 El nombre del equipo es una descripción elegida por el usuario. El identificador se crea una sola vez para cada computador (la pantalla permite generarlo) y no debe ser un correo. La clave de conexión es el valor secreto de `AGENT_API_KEY` configurado por el administrador en el entorno del servidor; no se genera ni se muestra en el navegador.
+
+### Configurar la clave en cPanel
+
+1. Abra **cPanel → Terminal** y genere una clave aleatoria (también puede usar el generador de contraseñas de cPanel):
+
+   ```bash
+   php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
+   ```
+
+2. Abra **cPanel → Administrador de archivos**, active «Mostrar archivos ocultos» y edite el `.htaccess` que está en la raíz de Quasar (el mismo nivel que `index.php`). Agregue, reemplazando el ejemplo por la clave generada:
+
+   ```apache
+   <IfModule mod_env.c>
+       SetEnv AGENT_API_KEY "PEGUE_AQUI_SU_CLAVE_ALEATORIA"
+   </IfModule>
+   ```
+
+3. Guarde el archivo. En Quasar, cierre y vuelva a abrir **Configuración**: `AGENT_API_KEY` debe aparecer como **Configurada**.
+4. Abra **Lector Windows** en cada PC y pegue exactamente esa misma clave en **Clave de conexión**. El nombre puede ser descriptivo y el identificador debe ser único por PC.
+
+No agregue la clave a `.env.example`, no la publique ni use la contraseña del panel. Este proyecto lee `AGENT_API_KEY` desde el entorno real de PHP; el archivo `.env.example` solo documenta los nombres de las variables. Si al agregar `SetEnv` cPanel muestra un error 500, elimine esas líneas y solicite al proveedor que defina `AGENT_API_KEY` para la aplicación PHP, porque el hosting ha deshabilitado `mod_env` o esa directiva.

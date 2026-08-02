@@ -48,7 +48,8 @@ if ($path === '/login' && $method === 'POST') {
 if ($path === '/logout') { $_SESSION = []; session_destroy(); header('Location: ' . url('login')); return; }
 
 if ($path === '/api/measurements' && $method === 'POST') {
-    if (!hash_equals(getenv('AGENT_API_KEY') ?: 'change-this-agent-key', $_SERVER['HTTP_X_API_KEY'] ?? '')) { http_response_code(401); echo json_encode(['error' => 'No autorizado']); return; }
+    $agentApiKey = (string) (getenv('AGENT_API_KEY') ?: '');
+    if ($agentApiKey === '' || !hash_equals($agentApiKey, $_SERVER['HTTP_X_API_KEY'] ?? '')) { http_response_code(401); echo json_encode(['error' => 'No autorizado']); return; }
     $payload = json_decode(file_get_contents('php://input') ?: '', true);
     $line = trim((string) ($payload['line'] ?? ''));
     if (!preg_match('/^(\d{2})-(\d{2})-(\d{4})-(\d{2}:\d{2}:\d{2});Tiempo;(-?\d+[,.]\d+);Razon;(-?\d+[,.]\d+);Conductividad;(-?\d+[,.]\d+)$/', $line, $fields)) { http_response_code(422); echo json_encode(['error' => 'Línea inválida']); return; }
@@ -94,7 +95,8 @@ if ($path === '/api/measurements' && $method === 'POST') {
 
 if ($path === '/api/agent/status' && $method === 'GET') {
     header('Content-Type: application/json');
-    if (!hash_equals(getenv('AGENT_API_KEY') ?: 'change-this-agent-key', $_SERVER['HTTP_X_API_KEY'] ?? '')) {
+    $agentApiKey = (string) (getenv('AGENT_API_KEY') ?: '');
+    if ($agentApiKey === '' || !hash_equals($agentApiKey, $_SERVER['HTTP_X_API_KEY'] ?? '')) {
         http_response_code(401); echo json_encode(['error' => 'No autorizado']); return;
     }
     echo json_encode(['status' => 'ok', 'serverTime' => gmdate('c')]); return;
