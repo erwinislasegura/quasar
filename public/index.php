@@ -33,7 +33,7 @@ if ($path === '/logout') { $_SESSION = []; session_destroy(); header('Location: 
 // Set REQUIRE_AUTH=1 in production; keeping it optional permits visual review immediately.
 if (getenv('REQUIRE_AUTH') === '1' && empty($_SESSION['user'])) { header('Location: /login'); return; }
 
-if ($path === '/') { (new App\Controllers\DashboardController())->index(); return; }
+if ($path === '/') { require dirname(__DIR__) . '/index.php'; return; }
 $modules = [
     'mediciones' => ['key'=>'mediciones','title'=>'Mediciones','subtitle'=>'Consulta de variables procesadas'],
     'archivos' => ['key'=>'archivos','title'=>'Archivos','subtitle'=>'Archivos recibidos y procesados'],

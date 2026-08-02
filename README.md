@@ -2,6 +2,8 @@
 
 Plataforma PHP MVC que convierte la referencia aprobada `index.html` en un panel dinámico y reutilizable, sin reemplazar su identidad visual. La copia inalterada está en `design-reference/index.html`.
 
+La conversión directa solicitada está en `index.php`: contiene exactamente el HTML, CSS y JavaScript de `index.html`, pero obtiene `RAW_DATA` desde `Analisis.txt` mediante PHP. La ruta principal sirve este archivo sin envolverlo en otro layout, evitando cualquier diferencia visual.
+
 ## Ejecución local
 
 Requiere PHP 8.1 o posterior.
