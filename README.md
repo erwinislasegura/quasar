@@ -48,6 +48,15 @@ mysql -u usuario -p quasar < database/update_user.sql
 
 El SQL actualiza correo, nombre, rol, estado y `password_hash` dentro de una transacción, sin eliminar mediciones ni recrear tablas. El acceso inicial generado por los SQL es `admin@quasar.local` / `quasar123`; cambie esa contraseña después de ingresar.
 
+Para incorporar a una base **ya existente** los nuevos menús, su catálogo y los permisos del Superadministrador, ejecute:
+
+```bash
+cd database
+mysql -u usuario -p quasar < update_modules.sql
+```
+
+`update_modules.sql` es idempotente: crea la tabla `modulos`, registra las once opciones del sidebar, crea un permiso `*.view` para cada una y lo asigna al rol `Superadministrador` sin borrar información existente.
+
 ## Módulo de lectura para Windows
 
 El agente solicitado está en `windows-agent/QuasarAgent.ps1`. Su instalación y configuración se explican en `windows-agent/README.md`. El agente lee las nuevas líneas del TXT, conserva su posición y las envía a `POST /api/measurements` usando la clave `AGENT_API_KEY`.
