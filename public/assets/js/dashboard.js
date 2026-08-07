@@ -55,20 +55,20 @@ const RAW_DATA = window.QUASAR_DATA || [];
 
       els.totalRecords.textContent = data.length;
       els.dateCount.textContent = `${uniqueDates.length} fechas diferentes`;
-      els.avgTiempo.textContent = fmt(average(data, 'tiempo'), 0);
+      els.avgTiempo.textContent = `${fmt(average(data, 'tiempo'), 0)} Seg`;
       els.avgRazon.textContent = fmt(average(data, 'razon'), 1);
-      els.avgConductividadKpi.textContent = fmt(average(data, 'conductividad'), 0);
+      els.avgConductividadKpi.textContent = `${fmt(average(data, 'conductividad'), 0)} mS/cm`;
 
       const tiempoValues = data.map(x => x.tiempo);
       const razonValues = data.map(x => x.razon);
       const conductivityValues = data.map(x => x.conductividad);
 
-      els.minTiempo.textContent = tiempoValues.length ? fmt(Math.min(...tiempoValues), 0) : '0';
-      els.maxTiempo.textContent = tiempoValues.length ? fmt(Math.max(...tiempoValues), 0) : '0';
+      els.minTiempo.textContent = `${tiempoValues.length ? fmt(Math.min(...tiempoValues), 0) : '0'} Seg`;
+      els.maxTiempo.textContent = `${tiempoValues.length ? fmt(Math.max(...tiempoValues), 0) : '0'} Seg`;
       els.minRazon.textContent = razonValues.length ? fmt(Math.min(...razonValues), 1) : '0,0';
       els.maxRazon.textContent = razonValues.length ? fmt(Math.max(...razonValues), 1) : '0,0';
-      els.minConductividad.textContent = conductivityValues.length ? fmt(Math.min(...conductivityValues), 0) : '0';
-      els.maxConductividad.textContent = conductivityValues.length ? fmt(Math.max(...conductivityValues), 0) : '0';
+      els.minConductividad.textContent = `${conductivityValues.length ? fmt(Math.min(...conductivityValues), 0) : '0'} mS/cm`;
+      els.maxConductividad.textContent = `${conductivityValues.length ? fmt(Math.max(...conductivityValues), 0) : '0'} mS/cm`;
 
       const last = [...data].sort((a,b) => a.iso.localeCompare(b.iso)).at(-1);
       els.lastReadText.textContent = last ? `${last.fecha} · ${last.hora}` : 'Sin mediciones';
@@ -87,9 +87,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
         <article class="recent-record">
           <div class="recent-record-time"><strong>${escapeHtml(item.fecha)}</strong><span>${escapeHtml(item.hora)}</span></div>
           <div class="recent-record-equipment"><strong>${escapeHtml(item.equipo || 'Equipo sin nombre')}</strong><span>${escapeHtml(item.equipoIdentificador || 'Sin identificador')}</span></div>
-          <div class="recent-record-value"><small>TSF (Seg)</small><strong>${fmt(item.tiempo, 0)}</strong></div>
+          <div class="recent-record-value"><small>TSF</small><strong>${fmt(item.tiempo, 0)} Seg</strong></div>
           <div class="recent-record-value"><small>Razón O/A</small><strong>${fmt(item.razon, 1)}</strong></div>
-          <div class="recent-record-value"><small>Conductividad (mS/cm)</small><strong>${fmt(item.conductividad, 0)}</strong></div>
+          <div class="recent-record-value"><small>Conductividad</small><strong>${fmt(item.conductividad, 0)} mS/cm</strong></div>
         </article>
       `).join('');
     }
@@ -172,9 +172,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
           <tr>
             <td class="date-cell"><strong>${item.fecha}</strong></td>
             <td>${item.hora}</td>
-            <td class="metric">${fmt(item.tiempo, 0)}</td>
+            <td class="metric">${fmt(item.tiempo, 0)} Seg</td>
             <td class="metric">${fmt(item.razon, 1)}</td>
-            <td class="metric">${fmt(item.conductividad, 0)}</td>
+            <td class="metric">${fmt(item.conductividad, 0)} mS/cm</td>
             <td>${item.archivo}</td>
             <td>${item.equipo || '—'}</td>
           </tr>
@@ -266,7 +266,8 @@ const RAW_DATA = window.QUASAR_DATA || [];
 
       const width = rect.width;
       const height = rect.height;
-      const pad = {top: 15, right: 24, bottom: 34, left: 45};
+      const leftPadding = definition.key === 'conductividad' ? 72 : (definition.key === 'tiempo' ? 58 : 45);
+      const pad = {top: 15, right: 24, bottom: 34, left: leftPadding};
       const plotW = width - pad.left - pad.right;
       const plotH = height - pad.top - pad.bottom;
 
@@ -310,7 +311,8 @@ const RAW_DATA = window.QUASAR_DATA || [];
         ctx.lineTo(width - pad.right, py);
         ctx.stroke();
         const axisDecimals = definition.key === 'razon' ? 1 : 0;
-        ctx.fillText(fmt(value, axisDecimals), pad.left - 8, py);
+        const axisUnit = definition.key === 'tiempo' ? ' Seg' : (definition.key === 'conductividad' ? ' mS/cm' : '');
+        ctx.fillText(`${fmt(value, axisDecimals)}${axisUnit}`, pad.left - 8, py);
       }
 
       ctx.textAlign = 'center';
@@ -368,7 +370,7 @@ const RAW_DATA = window.QUASAR_DATA || [];
 
         els.tooltip.innerHTML = `
           <strong>${item.fecha} ${item.hora}</strong><br>
-          ${meta.definition.label}: ${fmt(item[meta.definition.key], meta.definition.decimals)}
+          ${meta.definition.label}: ${fmt(item[meta.definition.key], meta.definition.decimals)}${meta.definition.key === 'tiempo' ? ' Seg' : (meta.definition.key === 'conductividad' ? ' mS/cm' : '')}
         `;
         els.tooltip.style.left = `${event.clientX}px`;
         els.tooltip.style.top = `${event.clientY}px`;
