@@ -45,9 +45,9 @@ $formatConductivity = static fn ($value): string => number_format((float)$value,
         <tr data-equipment="<?= e(strtolower((string)$row['equipoIdentificador'])) ?>" data-date="<?= e(substr((string)$row['iso'],0,10)) ?>">
           <td class="date-cell"><strong><?= e($row['fecha']) ?></strong><span><?= e($row['hora']) ?></span></td>
           <td class="equipment-cell"><strong><?= e($row['equipo']) ?></strong><code><?= e($row['equipoIdentificador']) ?></code></td>
-          <td class="measurement-value"><strong><?= $formatTsf($row['tiempo']) ?></strong><small>Seg</small></td>
+          <td class="measurement-value"><strong><?= $formatTsf($row['tiempo']) ?> Seg</strong><small>TSF</small></td>
           <td class="measurement-value"><strong><?= $formatRatio($row['razon']) ?></strong><small>Razón O/A</small></td>
-          <td class="measurement-value"><strong><?= $formatConductivity($row['conductividad']) ?></strong><small>mS/cm</small></td>
+          <td class="measurement-value"><strong><?= $formatConductivity($row['conductividad']) ?> mS/cm</strong><small>Conductividad</small></td>
           <td><span class="file-pill"><?= e($row['archivo']) ?></span></td>
         </tr>
       <?php endforeach;?>
