@@ -96,17 +96,45 @@
         <article class="panel dashboard-chart-full">
           <div class="panel-head">
             <div class="panel-title">
-              <h3>Evolución de las mediciones</h3>
-              <p>Serie cronológica de TSF, Razón O/A y Conductividad</p>
+              <h3>Evolución de TSF</h3>
+              <p>Serie cronológica de los valores TSF</p>
             </div>
             <div class="legend">
               <span class="legend-item"><i class="legend-dot" style="background:#2368e8"></i>TSF</span>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="tsfChart"></canvas>
+          </div>
+        </article>
+
+        <article class="panel dashboard-chart-full">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h3>Evolución de Razón O/A</h3>
+              <p>Serie cronológica de la relación orgánico/acuoso</p>
+            </div>
+            <div class="legend">
               <span class="legend-item"><i class="legend-dot" style="background:#e99a18"></i>Razón O/A</span>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="razonChart"></canvas>
+          </div>
+        </article>
+
+        <article class="panel dashboard-chart-full">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h3>Evolución de Conductividad</h3>
+              <p>Serie cronológica de los valores de conductividad</p>
+            </div>
+            <div class="legend">
               <span class="legend-item"><i class="legend-dot" style="background:#17a6b6"></i>Conductividad</span>
             </div>
           </div>
           <div class="chart-wrap">
-            <canvas id="mainChart"></canvas>
+            <canvas id="conductividadChart"></canvas>
           </div>
         </article>
 
