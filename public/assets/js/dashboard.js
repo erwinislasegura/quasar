@@ -148,7 +148,7 @@ const RAW_DATA = window.QUASAR_DATA || [];
       state.page = 1;
       renderStats(state.dashboard);
       renderTable();
-      drawChart();
+      drawCharts();
     }
 
     function sortData(data) {
@@ -251,8 +251,15 @@ const RAW_DATA = window.QUASAR_DATA || [];
       });
     }
 
-    function drawChart() {
-      const canvas = document.getElementById('mainChart');
+    const chartDefinitions = [
+      {id: 'tsfChart', key: 'tiempo', label: 'TSF', color: '#2368e8', decimals: 3},
+      {id: 'razonChart', key: 'razon', label: 'Razón O/A', color: '#e99a18', decimals: 6},
+      {id: 'conductividadChart', key: 'conductividad', label: 'Conductividad', color: '#17a6b6', decimals: 2}
+    ];
+
+    function drawChart(definition) {
+      const canvas = document.getElementById(definition.id);
+      if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
       canvas.width = Math.max(1, Math.floor(rect.width * dpr));
@@ -271,13 +278,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
       ctx.font = '10px system-ui';
       ctx.textBaseline = 'middle';
 
-      const data = state.dashboard.filter(item =>
-        Number.isFinite(Number(item.tiempo)) && Number.isFinite(Number(item.razon)) && Number.isFinite(Number(item.conductividad))
-      ).map(item => ({
+      const data = state.dashboard.filter(item => Number.isFinite(Number(item[definition.key]))).map(item => ({
         ...item,
-        tiempo: Number(item.tiempo),
-        razon: Number(item.razon),
-        conductividad: Number(item.conductividad)
+        [definition.key]: Number(item[definition.key])
       }));
       if (!data.length) {
         ctx.fillStyle = '#8a96a8';
@@ -286,11 +289,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
         canvas._chartMeta = null;
         return;
       }
-      const tiempo = data.map(d => d.tiempo);
-      const razon = data.map(d => d.razon);
-      const cond = data.map(d => d.conductividad);
-      const rawMin = Math.min(...tiempo, ...razon, ...cond);
-      const rawMax = Math.max(...tiempo, ...razon, ...cond);
+      const values = data.map(item => item[definition.key]);
+      const rawMin = Math.min(...values);
+      const rawMax = Math.max(...values);
       const span = rawMax - rawMin;
       const rangePad = span > 0 ? span * 0.08 : Math.max(1, Math.abs(rawMax) * 0.1);
       const minY = Math.min(0, rawMin - rangePad);
@@ -312,7 +313,8 @@ const RAW_DATA = window.QUASAR_DATA || [];
         ctx.moveTo(pad.left, py);
         ctx.lineTo(width - pad.right, py);
         ctx.stroke();
-        ctx.fillText(fmt(value,0), pad.left - 8, py);
+        const axisDecimals = definition.key === 'razon' ? 2 : 0;
+        ctx.fillText(fmt(value, axisDecimals), pad.left - 8, py);
       }
 
       ctx.textAlign = 'center';
@@ -324,41 +326,40 @@ const RAW_DATA = window.QUASAR_DATA || [];
         ctx.fillText(label, px, height - 14);
       }
 
-      const drawSeries = (key, color) => {
-        if (data.length > 1) {
-          ctx.beginPath();
-          data.forEach((item,index) => {
-            const px = x(index);
-            const py = y(item[key]);
-            if (index === 0) ctx.moveTo(px,py);
-            else ctx.lineTo(px,py);
-          });
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 2;
-          ctx.lineJoin = 'round';
-          ctx.lineCap = 'round';
-          ctx.stroke();
-        }
-
-        data.forEach((item, index) => {
-          ctx.beginPath();
-          ctx.arc(x(index), y(item[key]), data.length === 1 ? 5 : 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = color;
-          ctx.fill();
+      if (data.length > 1) {
+        ctx.beginPath();
+        data.forEach((item,index) => {
+          const px = x(index);
+          const py = y(item[definition.key]);
+          if (index === 0) ctx.moveTo(px,py);
+          else ctx.lineTo(px,py);
         });
-      };
+        ctx.strokeStyle = definition.color;
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
 
-      drawSeries('tiempo', '#2368e8');
-      drawSeries('razon', '#e99a18');
-      drawSeries('conductividad', '#17a6b6');
+      data.forEach((item, index) => {
+        ctx.beginPath();
+        ctx.arc(x(index), y(item[definition.key]), data.length === 1 ? 5 : 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = definition.color;
+        ctx.fill();
+      });
 
-      canvas._chartMeta = {x,y,pad,plotW,plotH,data};
+      canvas._chartMeta = {x,y,pad,plotW,plotH,data,definition};
     }
 
-    function setupChartTooltip() {
-      const canvas = document.getElementById('mainChart');
+    function drawCharts() {
+      chartDefinitions.forEach(drawChart);
+    }
 
-      canvas.addEventListener('mousemove', event => {
+    function setupChartTooltips() {
+      chartDefinitions.forEach(definition => {
+        const canvas = document.getElementById(definition.id);
+        if (!canvas) return;
+        canvas.addEventListener('mousemove', event => {
         const meta = canvas._chartMeta;
         if (!meta) return;
 
@@ -371,15 +372,16 @@ const RAW_DATA = window.QUASAR_DATA || [];
 
         els.tooltip.innerHTML = `
           <strong>${item.fecha} ${item.hora}</strong><br>
-          TSF: ${fmt(item.tiempo,3)} · Razón O/A: ${fmt(item.razon,6)} · Conductividad: ${fmt(item.conductividad,2)}
+          ${meta.definition.label}: ${fmt(item[meta.definition.key], meta.definition.decimals)}
         `;
         els.tooltip.style.left = `${event.clientX}px`;
         els.tooltip.style.top = `${event.clientY}px`;
         els.tooltip.style.opacity = '1';
-      });
+        });
 
-      canvas.addEventListener('mouseleave', () => {
-        els.tooltip.style.opacity = '0';
+        canvas.addEventListener('mouseleave', () => {
+          els.tooltip.style.opacity = '0';
+        });
       });
     }
 
@@ -435,12 +437,12 @@ const RAW_DATA = window.QUASAR_DATA || [];
 
     initFilters();
     setupTableEvents();
-    setupChartTooltip();
+    setupChartTooltips();
     setupActions();
     applyFilters();
 
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(drawChart, 120);
+      resizeTimer = setTimeout(drawCharts, 120);
     });
