@@ -145,7 +145,10 @@ if ($path === '/api/measurements' && $method === 'POST') {
     if (!$sessionAuthorized && !$keyAuthorized) { http_response_code(401); echo json_encode(['error' => 'No autorizado']); return; }
     $payload = json_decode(file_get_contents('php://input') ?: '', true);
     $line = trim((string) ($payload['line'] ?? ''));
-    if (!preg_match('/^(\d{2})-(\d{2})-(\d{4})-(\d{2}:\d{2}:\d{2});Tiempo;(-?\d+[,.]\d+);Razon;(-?\d+[,.]\d+);Conductividad;(-?\d+[,.]\d+)$/', $line, $fields)) { http_response_code(422); echo json_encode(['error' => 'Línea inválida']); return; }
+    if (!preg_match('/^(\d{2})-(\d{2})-(\d{4})-(\d{1,2}:\d{2}:\d{2});Tiempo;(-?\d+[,.]\d+);Razon;(-?\d+[,.]\d+);Conductividad;(-?\d+[,.]\d+)$/', $line, $fields)) { http_response_code(422); echo json_encode(['error' => 'Línea inválida']); return; }
+    [$hour, $minute, $second] = array_map('intval', explode(':', $fields[4]));
+    if ($hour > 23 || $minute > 59 || $second > 59) { http_response_code(422); echo json_encode(['error' => 'Hora inválida']); return; }
+    $normalizedTime = sprintf('%02d:%02d:%02d', $hour, $minute, $second);
 
     $connect = require dirname(__DIR__) . '/config/database.php';
     $pdo = $connect();
@@ -233,7 +236,7 @@ if ($path === '/api/measurements' && $method === 'POST') {
                 echo json_encode(['status'=>'paused','error'=>'La recepción de este equipo está pausada']);
                 return;
             }
-            $measuredAt = "{$fields[3]}-{$fields[2]}-{$fields[1]} {$fields[4]}";
+            $measuredAt = "{$fields[3]}-{$fields[2]}-{$fields[1]} {$normalizedTime}";
             $tsf = str_replace(',', '.', $fields[5]);
             $razon = str_replace(',', '.', $fields[6]);
             $conductividad = str_replace(',', '.', $fields[7]);
