@@ -55,18 +55,18 @@ const RAW_DATA = window.QUASAR_DATA || [];
 
       els.totalRecords.textContent = data.length;
       els.dateCount.textContent = `${uniqueDates.length} fechas diferentes`;
-      els.avgTiempo.textContent = fmt(average(data, 'tiempo'), 2);
-      els.avgRazon.textContent = fmt(average(data, 'razon'), 3);
-      els.avgConductividadKpi.textContent = fmt(average(data, 'conductividad'), 2);
+      els.avgTiempo.textContent = fmt(average(data, 'tiempo'), 0);
+      els.avgRazon.textContent = fmt(average(data, 'razon'), 1);
+      els.avgConductividadKpi.textContent = fmt(average(data, 'conductividad'), 0);
 
       const tiempoValues = data.map(x => x.tiempo);
       const razonValues = data.map(x => x.razon);
       const conductivityValues = data.map(x => x.conductividad);
 
-      els.minTiempo.textContent = tiempoValues.length ? fmt(Math.min(...tiempoValues), 2) : '0';
-      els.maxTiempo.textContent = tiempoValues.length ? fmt(Math.max(...tiempoValues), 2) : '0';
-      els.minRazon.textContent = razonValues.length ? fmt(Math.min(...razonValues), 3) : '0';
-      els.maxRazon.textContent = razonValues.length ? fmt(Math.max(...razonValues), 3) : '0';
+      els.minTiempo.textContent = tiempoValues.length ? fmt(Math.min(...tiempoValues), 0) : '0';
+      els.maxTiempo.textContent = tiempoValues.length ? fmt(Math.max(...tiempoValues), 0) : '0';
+      els.minRazon.textContent = razonValues.length ? fmt(Math.min(...razonValues), 1) : '0,0';
+      els.maxRazon.textContent = razonValues.length ? fmt(Math.max(...razonValues), 1) : '0,0';
       els.minConductividad.textContent = conductivityValues.length ? fmt(Math.min(...conductivityValues), 0) : '0';
       els.maxConductividad.textContent = conductivityValues.length ? fmt(Math.max(...conductivityValues), 0) : '0';
 
@@ -87,9 +87,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
         <article class="recent-record">
           <div class="recent-record-time"><strong>${escapeHtml(item.fecha)}</strong><span>${escapeHtml(item.hora)}</span></div>
           <div class="recent-record-equipment"><strong>${escapeHtml(item.equipo || 'Equipo sin nombre')}</strong><span>${escapeHtml(item.equipoIdentificador || 'Sin identificador')}</span></div>
-          <div class="recent-record-value"><small>TSF</small><strong>${fmt(item.tiempo, 3)}</strong></div>
-          <div class="recent-record-value"><small>Razón O/A</small><strong>${fmt(item.razon, 6)}</strong></div>
-          <div class="recent-record-value"><small>Conductividad</small><strong>${fmt(item.conductividad, 2)}</strong></div>
+          <div class="recent-record-value"><small>TSF (Seg)</small><strong>${fmt(item.tiempo, 0)}</strong></div>
+          <div class="recent-record-value"><small>Razón O/A</small><strong>${fmt(item.razon, 1)}</strong></div>
+          <div class="recent-record-value"><small>Conductividad (mS/cm)</small><strong>${fmt(item.conductividad, 0)}</strong></div>
         </article>
       `).join('');
     }
@@ -172,9 +172,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
           <tr>
             <td class="date-cell"><strong>${item.fecha}</strong></td>
             <td>${item.hora}</td>
-            <td class="metric">${fmt(item.tiempo, 3)}</td>
-            <td class="metric">${fmt(item.razon, 6)}</td>
-            <td class="metric">${fmt(item.conductividad, 2)}</td>
+            <td class="metric">${fmt(item.tiempo, 0)}</td>
+            <td class="metric">${fmt(item.razon, 1)}</td>
+            <td class="metric">${fmt(item.conductividad, 0)}</td>
             <td>${item.archivo}</td>
             <td>${item.equipo || '—'}</td>
           </tr>
@@ -248,9 +248,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
     }
 
     const chartDefinitions = [
-      {id: 'tsfChart', key: 'tiempo', label: 'TSF', color: '#2368e8', decimals: 3},
-      {id: 'razonChart', key: 'razon', label: 'Razón O/A', color: '#e99a18', decimals: 6},
-      {id: 'conductividadChart', key: 'conductividad', label: 'Conductividad', color: '#17a6b6', decimals: 2}
+      {id: 'tsfChart', key: 'tiempo', label: 'TSF (Seg)', color: '#2368e8', decimals: 0},
+      {id: 'razonChart', key: 'razon', label: 'Razón O/A', color: '#e99a18', decimals: 1},
+      {id: 'conductividadChart', key: 'conductividad', label: 'Conductividad (mS/cm)', color: '#17a6b6', decimals: 0}
     ];
 
     function drawChart(definition) {
@@ -309,7 +309,7 @@ const RAW_DATA = window.QUASAR_DATA || [];
         ctx.moveTo(pad.left, py);
         ctx.lineTo(width - pad.right, py);
         ctx.stroke();
-        const axisDecimals = definition.key === 'razon' ? 2 : (maxY - minY < 10 ? 1 : 0);
+        const axisDecimals = definition.key === 'razon' ? 1 : 0;
         ctx.fillText(fmt(value, axisDecimals), pad.left - 8, py);
       }
 
@@ -383,13 +383,14 @@ const RAW_DATA = window.QUASAR_DATA || [];
 
     function exportCSV() {
       const data = sortData(state.filtered);
-      const header = ['Fecha','Hora','TSF','Razon O/A','Conductividad','Estado','Archivo','Equipo'];
+      const csvNumber = (value, decimals) => Number(value).toFixed(decimals).replace('.', ',');
+      const header = ['Fecha','Hora','TSF (Seg)','Razon O/A','Conductividad (mS/cm)','Estado','Archivo','Equipo'];
       const rows = data.map(item => [
         item.fecha,
         item.hora,
-        String(item.tiempo).replace('.',','),
-        String(item.razon).replace('.',','),
-        String(item.conductividad).replace('.',','),
+        csvNumber(item.tiempo, 0),
+        csvNumber(item.razon, 1),
+        csvNumber(item.conductividad, 0),
         getStatus(item).label,
         item.archivo,
         item.equipo || ''
