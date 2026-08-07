@@ -168,21 +168,17 @@ const RAW_DATA = window.QUASAR_DATA || [];
       const start = (state.page - 1) * state.pageSize;
       const rows = sorted.slice(start, start + state.pageSize);
 
-      els.tableBody.innerHTML = rows.map((item, index) => {
-        const status = getStatus(item);
-        return `
+      els.tableBody.innerHTML = rows.map(item => `
           <tr>
             <td class="date-cell"><strong>${item.fecha}</strong></td>
             <td>${item.hora}</td>
             <td class="metric">${fmt(item.tiempo, 3)}</td>
             <td class="metric">${fmt(item.razon, 6)}</td>
             <td class="metric">${fmt(item.conductividad, 2)}</td>
-            <td><span class="badge ${status.className}">${status.label}</span></td>
             <td>${item.archivo}</td>
             <td>${item.equipo || '—'}</td>
           </tr>
-        `;
-      }).join('');
+        `).join('');
 
       els.emptyState.hidden = rows.length > 0;
       els.tableInfo.textContent = sorted.length
@@ -293,9 +289,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
       const rawMin = Math.min(...values);
       const rawMax = Math.max(...values);
       const span = rawMax - rawMin;
-      const rangePad = span > 0 ? span * 0.08 : Math.max(1, Math.abs(rawMax) * 0.1);
-      const minY = Math.min(0, rawMin - rangePad);
-      const maxY = Math.max(0, rawMax + rangePad, minY + 1);
+      const rangePad = span > 0 ? span * 0.1 : Math.max(definition.key === 'razon' ? 0.1 : 1, Math.abs(rawMax) * 0.1);
+      const minY = rawMin - rangePad;
+      const maxY = Math.max(rawMax + rangePad, minY + (definition.key === 'razon' ? 0.2 : 1));
 
       const x = index => pad.left + (index / Math.max(1, data.length - 1)) * plotW;
       const y = value => pad.top + (1 - (value - minY) / (maxY - minY)) * plotH;
@@ -313,7 +309,7 @@ const RAW_DATA = window.QUASAR_DATA || [];
         ctx.moveTo(pad.left, py);
         ctx.lineTo(width - pad.right, py);
         ctx.stroke();
-        const axisDecimals = definition.key === 'razon' ? 2 : 0;
+        const axisDecimals = definition.key === 'razon' ? 2 : (maxY - minY < 10 ? 1 : 0);
         ctx.fillText(fmt(value, axisDecimals), pad.left - 8, py);
       }
 
