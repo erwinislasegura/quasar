@@ -46,7 +46,7 @@
             </svg>
           </div>
           <div>
-            <div class="kpi-label">TSF promedio</div>
+            <div class="kpi-label">TSF promedio (Seg)</div>
             <div class="kpi-value" id="avgTiempo">0</div>
             <div class="kpi-foot">Promedio general del archivo</div>
           </div>
@@ -72,7 +72,7 @@
             </svg>
           </div>
           <div>
-            <div class="kpi-label">Conductividad promedio</div>
+            <div class="kpi-label">Conductividad promedio (mS/cm)</div>
             <div class="kpi-value" id="avgConductividadKpi">0</div>
             <div class="kpi-foot">Promedio del equipo seleccionado</div>
           </div>
@@ -96,11 +96,11 @@
         <article class="panel dashboard-chart-full">
           <div class="panel-head">
             <div class="panel-title">
-              <h3>Evolución de TSF</h3>
-              <p>Serie cronológica de los valores TSF</p>
+              <h3>Evolución de TSF (Seg)</h3>
+              <p>Serie cronológica de TSF expresada en segundos</p>
             </div>
             <div class="legend">
-              <span class="legend-item"><i class="legend-dot" style="background:#2368e8"></i>TSF</span>
+              <span class="legend-item"><i class="legend-dot" style="background:#2368e8"></i>TSF (Seg)</span>
             </div>
           </div>
           <div class="chart-wrap">
@@ -126,11 +126,11 @@
         <article class="panel dashboard-chart-full">
           <div class="panel-head">
             <div class="panel-title">
-              <h3>Evolución de Conductividad</h3>
-              <p>Serie cronológica de los valores de conductividad</p>
+              <h3>Evolución de Conductividad (mS/cm)</h3>
+              <p>Serie cronológica de conductividad en mS/cm</p>
             </div>
             <div class="legend">
-              <span class="legend-item"><i class="legend-dot" style="background:#17a6b6"></i>Conductividad</span>
+              <span class="legend-item"><i class="legend-dot" style="background:#17a6b6"></i>Conductividad (mS/cm)</span>
             </div>
           </div>
           <div class="chart-wrap">
@@ -142,7 +142,7 @@
 
       <section class="range-grid">
         <article class="panel range-card">
-          <div class="range-head"><strong>Rango de TSF</strong><span>mínimo / máximo</span></div>
+          <div class="range-head"><strong>Rango de TSF (Seg)</strong><span>mínimo / máximo</span></div>
           <div class="range-values"><div><small>Mínimo</small><b id="minTiempo">0</b></div><div style="text-align:right"><small>Máximo</small><b id="maxTiempo">0</b></div></div>
           <div class="bar"><i style="width:84%"></i></div>
         </article>
@@ -152,7 +152,7 @@
           <div class="bar"><i style="width:72%; background:linear-gradient(90deg,#e99a18,#ffbd50)"></i></div>
         </article>
         <article class="panel range-card">
-          <div class="range-head"><strong>Rango de Conductividad</strong><span>mínimo / máximo</span></div>
+          <div class="range-head"><strong>Rango de Conductividad (mS/cm)</strong><span>mínimo / máximo</span></div>
           <div class="range-values"><div><small>Mínimo</small><b id="minConductividad">0</b></div><div style="text-align:right"><small>Máximo</small><b id="maxConductividad">0</b></div></div>
           <div class="bar"><i style="width:62%; background:linear-gradient(90deg,#17a6b6,#48c9d5)"></i></div>
         </article>
@@ -199,9 +199,9 @@
               <tr>
                 <th class="sortable" data-sort="iso">Fecha ↕</th>
                 <th>Hora</th>
-                <th class="sortable" data-sort="tiempo">TSF ↕</th>
+                <th class="sortable" data-sort="tiempo">TSF (Seg) ↕</th>
                 <th class="sortable" data-sort="razon">Razón O/A ↕</th>
-                <th class="sortable" data-sort="conductividad">Conductividad ↕</th>
+                <th class="sortable" data-sort="conductividad">Conductividad (mS/cm) ↕</th>
                 <th>Archivo</th>
                 <th>Equipo</th>
               </tr>
