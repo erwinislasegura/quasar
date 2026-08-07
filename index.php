@@ -30,15 +30,21 @@ if (!function_exists('cargarMediciones')) {
                 continue;
             }
 
-            if (!preg_match('/^(\\d{2})-(\\d{2})-(\\d{4})-(\\d{2}:\\d{2}:\\d{2})$/', $campos[0], $fecha)) {
+            if (!preg_match('/^(\\d{2})-(\\d{2})-(\\d{4})-(\\d{1,2}:\\d{2}:\\d{2})$/', $campos[0], $fecha)) {
                 continue;
             }
 
+            [$hora, $minuto, $segundo] = array_map('intval', explode(':', $fecha[4]));
+            if (!checkdate((int) $fecha[2], (int) $fecha[1], (int) $fecha[3]) || $hora > 23 || $minuto > 59 || $segundo > 59) {
+                continue;
+            }
+            $horaNormalizada = sprintf('%02d:%02d:%02d', $hora, $minuto, $segundo);
+
             $mediciones[] = [
                 'id' => count($mediciones) + 1,
-                'iso' => sprintf('%s-%s-%sT%s', $fecha[3], $fecha[2], $fecha[1], $fecha[4]),
+                'iso' => sprintf('%s-%s-%sT%s', $fecha[3], $fecha[2], $fecha[1], $horaNormalizada),
                 'fecha' => sprintf('%s-%s-%s', $fecha[1], $fecha[2], $fecha[3]),
-                'hora' => $fecha[4],
+                'hora' => $horaNormalizada,
                 'tiempo' => (float) str_replace(',', '.', $campos[2]),
                 'razon' => (float) str_replace(',', '.', $campos[4]),
                 'conductividad' => (float) str_replace(',', '.', $campos[6]),
