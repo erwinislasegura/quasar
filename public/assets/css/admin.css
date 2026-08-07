@@ -388,7 +388,7 @@
     .recent-record-value small { display: block; color: #7b899c; font-size: 8px; font-weight: 800; letter-spacing: .55px; text-transform: uppercase; }
     .recent-record-value strong { display: block; margin-top: 2px; overflow: hidden; font-size: 11px; font-variant-numeric: tabular-nums; text-overflow: ellipsis; white-space: nowrap; }
     .recent-empty { border-top: 1px solid var(--border); }
-    .dashboard-chart-full .chart-wrap { height: 340px; }
+    .dashboard-chart-full .chart-wrap { height: 300px; }
 
     .panel {
       min-width: 0;
@@ -767,7 +767,7 @@
       .panel-head { padding-inline: 15px; }
       .legend { display: none; }
       .chart-wrap { height: 245px; padding-inline: 6px; }
-      .dashboard-chart-full .chart-wrap { height: 285px; }
+      .dashboard-chart-full .chart-wrap { height: 250px; }
       .recent-record { grid-template-columns: 1fr 1fr; gap: 10px 14px; }
       .recent-record-equipment { text-align: right; }
       .recent-record-value { padding: 9px 0 0; border-top: 1px solid #edf1f6; border-left: 0; }
