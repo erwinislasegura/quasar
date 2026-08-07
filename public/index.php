@@ -17,31 +17,6 @@ spl_autoload_register(static function (string $class): void {
     }
 });
 
-// Keep sessions created by previous versions compatible and refresh a missing
-// role from the database so the header never falls back to a generic label.
-if (!empty($_SESSION['user']) && empty($_SESSION['user']['role'])) {
-    if (!empty($_SESSION['user']['rol'])) {
-        $_SESSION['user']['role'] = (string) $_SESSION['user']['rol'];
-    } elseif (!empty($_SESSION['user']['email'])) {
-        try {
-            $connect = require dirname(__DIR__) . '/config/database.php';
-            $pdo = $connect();
-            if ($pdo instanceof PDO) {
-                $statement = $pdo->prepare('SELECT u.nombre, r.nombre AS rol FROM usuarios u JOIN roles r ON r.id = u.rol_id WHERE u.email = :email AND u.activo = 1 LIMIT 1');
-                $statement->execute(['email' => $_SESSION['user']['email']]);
-                $sessionUser = $statement->fetch();
-                if ($sessionUser) {
-                    $_SESSION['user']['name'] = $sessionUser['nombre'];
-                    $_SESSION['user']['role'] = $sessionUser['rol'];
-                }
-            }
-        } catch (Throwable) {
-            // A stale session must never prevent the application from loading.
-            // Signing in again will rebuild it with the current role structure.
-        }
-    }
-}
-
 $path = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/', '/') ?: '/';
 $basePath = rtrim(dirname(str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '')), '/.');
 if (str_ends_with($basePath, '/public')) $basePath = substr($basePath, 0, -7);
