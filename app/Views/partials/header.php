@@ -4,6 +4,6 @@
   <div class="top-actions">
     <div class="last-update">Última actualización<br><strong id="lastReadText"><?= date('d-m-Y · H:i:s') ?></strong></div>
     <?php if (($active ?? '') === 'dashboard'): ?><button class="btn" id="exportButton"><span>Exportar CSV</span></button><button class="btn primary" id="refreshButton"><span>Actualizar</span></button><?php endif; ?>
-    <div class="user-chip"><div><strong><?= e($_SESSION['user']['name'] ?? 'Administrador local') ?></strong><span><?= e($_SESSION['user']['role'] ?? $_SESSION['user']['rol'] ?? 'Rol no disponible') ?></span></div><a class="text-link" href="<?= e(url('logout')) ?>">Salir</a></div>
+    <div class="user-chip"><div><strong><?= e($_SESSION['user']['name'] ?? 'Administrador local') ?></strong><span><?= e($_SESSION['user']['role'] ?? 'Administrador') ?></span></div><a class="text-link" href="/logout">Salir</a></div>
   </div>
 </header>
