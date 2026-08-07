@@ -2,7 +2,9 @@
 $total = count($rows);
 $equipmentCount = count(array_unique(array_filter(array_column($rows, 'equipoIdentificador'))));
 $latest = $total ? $rows[$total - 1] : null;
-$formatValue = static fn ($value): string => number_format((float)$value, 2, ',', '.');
+$formatTsf = static fn ($value): string => number_format((float)$value, 0, ',', '.');
+$formatRatio = static fn ($value): string => number_format((float)$value, 1, ',', '.');
+$formatConductivity = static fn ($value): string => number_format((float)$value, 0, ',', '.');
 ?>
 <section class="measurements-intro">
   <div>
@@ -37,15 +39,15 @@ $formatValue = static fn ($value): string => number_format((float)$value, 2, ','
   <div class="active-filter-note" data-measurement-note hidden></div>
   <div class="table-scroll">
     <table class="measurements-table">
-      <thead><tr><th>Fecha y hora</th><th>Equipo</th><th>Tiempo</th><th>Razón O/A</th><th>Conductividad</th><th>Archivo</th></tr></thead>
+      <thead><tr><th>Fecha y hora</th><th>Equipo</th><th>TSF (Seg)</th><th>Razón O/A</th><th>Conductividad (mS/cm)</th><th>Archivo</th></tr></thead>
       <tbody>
       <?php foreach(array_reverse($rows) as$row):?>
         <tr data-equipment="<?= e(strtolower((string)$row['equipoIdentificador'])) ?>" data-date="<?= e(substr((string)$row['iso'],0,10)) ?>">
           <td class="date-cell"><strong><?= e($row['fecha']) ?></strong><span><?= e($row['hora']) ?></span></td>
           <td class="equipment-cell"><strong><?= e($row['equipo']) ?></strong><code><?= e($row['equipoIdentificador']) ?></code></td>
-          <td class="measurement-value"><strong><?= $formatValue($row['tiempo']) ?></strong><small>Tiempo</small></td>
-          <td class="measurement-value"><strong><?= $formatValue($row['razon']) ?></strong><small>Razón</small></td>
-          <td class="measurement-value"><strong><?= $formatValue($row['conductividad']) ?></strong><small>Conductividad</small></td>
+          <td class="measurement-value"><strong><?= $formatTsf($row['tiempo']) ?></strong><small>Seg</small></td>
+          <td class="measurement-value"><strong><?= $formatRatio($row['razon']) ?></strong><small>Razón O/A</small></td>
+          <td class="measurement-value"><strong><?= $formatConductivity($row['conductividad']) ?></strong><small>mS/cm</small></td>
           <td><span class="file-pill"><?= e($row['archivo']) ?></span></td>
         </tr>
       <?php endforeach;?>
