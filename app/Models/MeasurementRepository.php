@@ -27,14 +27,19 @@ final class MeasurementRepository
         $records = [];
         foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $line) {
             $parts = str_getcsv($line, ';');
-            if (count($parts) < 7 || !preg_match('/^(\d{2})-(\d{2})-(\d{4})-(\d{2}:\d{2}:\d{2})$/', $parts[0], $match)) {
+            if (count($parts) < 7 || !preg_match('/^(\d{2})-(\d{2})-(\d{4})-(\d{1,2}:\d{2}:\d{2})$/', $parts[0], $match)) {
                 continue;
             }
+            [$hour, $minute, $second] = array_map('intval', explode(':', $match[4]));
+            if (!checkdate((int) $match[2], (int) $match[1], (int) $match[3]) || $hour > 23 || $minute > 59 || $second > 59) {
+                continue;
+            }
+            $normalizedTime = sprintf('%02d:%02d:%02d', $hour, $minute, $second);
             $records[] = [
                 'id' => count($records) + 1,
-                'iso' => "{$match[3]}-{$match[2]}-{$match[1]}T{$match[4]}",
+                'iso' => "{$match[3]}-{$match[2]}-{$match[1]}T{$normalizedTime}",
                 'fecha' => "{$match[1]}-{$match[2]}-{$match[3]}",
-                'hora' => $match[4],
+                'hora' => $normalizedTime,
                 'tiempo' => (float) str_replace(',', '.', $parts[2]),
                 'razon' => (float) str_replace(',', '.', $parts[4]),
                 'conductividad' => (float) str_replace(',', '.', $parts[6]),
