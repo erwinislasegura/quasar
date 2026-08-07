@@ -47,7 +47,7 @@
           </div>
           <div>
             <div class="kpi-label">TSF promedio (Seg)</div>
-            <div class="kpi-value" id="avgTiempo">0</div>
+            <div class="kpi-value" id="avgTiempo">0 Seg</div>
             <div class="kpi-foot">Promedio general del archivo</div>
           </div>
         </article>
@@ -73,7 +73,7 @@
           </div>
           <div>
             <div class="kpi-label">Conductividad promedio (mS/cm)</div>
-            <div class="kpi-value" id="avgConductividadKpi">0</div>
+            <div class="kpi-value" id="avgConductividadKpi">0 mS/cm</div>
             <div class="kpi-foot">Promedio del equipo seleccionado</div>
           </div>
         </article>
@@ -143,7 +143,7 @@
       <section class="range-grid">
         <article class="panel range-card">
           <div class="range-head"><strong>Rango de TSF (Seg)</strong><span>mínimo / máximo</span></div>
-          <div class="range-values"><div><small>Mínimo</small><b id="minTiempo">0</b></div><div style="text-align:right"><small>Máximo</small><b id="maxTiempo">0</b></div></div>
+          <div class="range-values"><div><small>Mínimo</small><b id="minTiempo">0 Seg</b></div><div style="text-align:right"><small>Máximo</small><b id="maxTiempo">0 Seg</b></div></div>
           <div class="bar"><i style="width:84%"></i></div>
         </article>
         <article class="panel range-card">
@@ -153,7 +153,7 @@
         </article>
         <article class="panel range-card">
           <div class="range-head"><strong>Rango de Conductividad (mS/cm)</strong><span>mínimo / máximo</span></div>
-          <div class="range-values"><div><small>Mínimo</small><b id="minConductividad">0</b></div><div style="text-align:right"><small>Máximo</small><b id="maxConductividad">0</b></div></div>
+          <div class="range-values"><div><small>Mínimo</small><b id="minConductividad">0 mS/cm</b></div><div style="text-align:right"><small>Máximo</small><b id="maxConductividad">0 mS/cm</b></div></div>
           <div class="bar"><i style="width:62%; background:linear-gradient(90deg,#17a6b6,#48c9d5)"></i></div>
         </article>
       </section>
