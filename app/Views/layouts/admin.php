@@ -26,7 +26,7 @@
   <div class="tooltip" id="tooltip"></div>
   <?php if (!empty($dashboardScripts)): ?>
     <script>window.QUASAR_DATA = <?= json_encode($records, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?>;</script>
-    <script src="<?= url('assets/js/dashboard.js') ?>?v=20260807-3"></script>
+    <script src="<?= url('assets/js/dashboard.js') ?>?v=20260807-4"></script>
   <?php else: ?>
     <script src="<?= url('assets/js/admin.js') ?>?v=20260802-2"></script>
   <?php endif; ?>
