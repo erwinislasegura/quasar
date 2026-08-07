@@ -52,7 +52,10 @@ if ($path === '/api/measurements' && $method === 'POST') {
     if ($agentApiKey === '' || !hash_equals($agentApiKey, $_SERVER['HTTP_X_API_KEY'] ?? '')) { http_response_code(401); echo json_encode(['error' => 'No autorizado']); return; }
     $payload = json_decode(file_get_contents('php://input') ?: '', true);
     $line = trim((string) ($payload['line'] ?? ''));
-    if (!preg_match('/^(\d{2})-(\d{2})-(\d{4})-(\d{2}:\d{2}:\d{2});Tiempo;(-?\d+[,.]\d+);Razon;(-?\d+[,.]\d+);Conductividad;(-?\d+[,.]\d+)$/', $line, $fields)) { http_response_code(422); echo json_encode(['error' => 'Línea inválida']); return; }
+    if (!preg_match('/^(\d{2})-(\d{2})-(\d{4})-(\d{1,2}:\d{2}:\d{2});Tiempo;(-?\d+[,.]\d+);Razon;(-?\d+[,.]\d+);Conductividad;(-?\d+[,.]\d+)$/', $line, $fields)) { http_response_code(422); echo json_encode(['error' => 'Línea inválida']); return; }
+    [$hour, $minute, $second] = array_map('intval', explode(':', $fields[4]));
+    if (!checkdate((int) $fields[2], (int) $fields[1], (int) $fields[3]) || $hour > 23 || $minute > 59 || $second > 59) { http_response_code(422); echo json_encode(['error' => 'Fecha u hora inválida']); return; }
+    $normalizedTime = sprintf('%02d:%02d:%02d', $hour, $minute, $second);
 
     $connect = require dirname(__DIR__) . '/config/database.php';
     $pdo = $connect();
@@ -74,7 +77,7 @@ if ($path === '/api/measurements' && $method === 'POST') {
                 $measurement = $pdo->prepare("INSERT INTO mediciones (archivo_id, equipo_id, measured_at, tsf, razon_oa, conductividad, estado, archivo, equipo) VALUES (:archivo_id, :equipo_id, :fecha, :tsf, :razon, :conductividad, :estado, 'Analisis.txt', :equipo)");
                 $measurement->execute([
                     'archivo_id' => $fileId, 'equipo_id' => $equipmentId,
-                    'fecha' => "{$fields[3]}-{$fields[2]}-{$fields[1]} {$fields[4]}",
+                    'fecha' => "{$fields[3]}-{$fields[2]}-{$fields[1]} {$normalizedTime}",
                     'tsf' => str_replace(',', '.', $fields[5]), 'razon' => str_replace(',', '.', $fields[6]),
                     'conductividad' => str_replace(',', '.', $fields[7]),
                     'estado' => (float) str_replace(',', '.', $fields[7]) < 0 ? 'Revisar' : 'Válido', 'equipo' => $equipmentName,
