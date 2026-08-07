@@ -202,7 +202,6 @@
                 <th class="sortable" data-sort="tiempo">TSF ↕</th>
                 <th class="sortable" data-sort="razon">Razón O/A ↕</th>
                 <th class="sortable" data-sort="conductividad">Conductividad ↕</th>
-                <th>Estado</th>
                 <th>Archivo</th>
                 <th>Equipo</th>
               </tr>
