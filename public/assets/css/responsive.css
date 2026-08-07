@@ -10,3 +10,22 @@
 @media(max-width:680px){.user-chip{display:none}}
 .login-eyebrow { display:block;color:var(--primary);font-size:9px;font-weight:850;letter-spacing:1.2px;margin-bottom:8px }
 .login-status { display:flex;align-items:center;justify-content:center;gap:9px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:10px }
+@media (max-width: 980px) {
+  .measurement-summary { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .measurement-filters { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .measurement-search { grid-column: 1 / -1; }
+  .measurement-clear { width: max-content; }
+}
+
+@media (max-width: 640px) {
+  .measurements-intro { padding: 18px; display: grid; }
+  .measurements-live { min-width: 0; }
+  .measurement-summary { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .measurement-summary article { padding: 13px; }
+  .measurement-summary strong { font-size: 17px; }
+  .measurement-filters { padding: 13px; grid-template-columns: 1fr; }
+  .measurement-search { grid-column: auto; }
+  .measurement-clear { width: 100%; }
+  .measurements-table { min-width: 760px; }
+  .measurement-footer { align-items: flex-start; flex-direction: column; }
+}

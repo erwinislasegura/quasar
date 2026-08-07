@@ -1,0 +1,13 @@
+{
+  "name": "Quasar Lector Windows",
+  "short_name": "Quasar Lector",
+  "description": "Lector confiable de mediciones Analisis.txt para Quasar",
+  "start_url": "/windows-reader",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#102a4c",
+  "icons": [
+    {"src":"/assets/quasar-reader.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

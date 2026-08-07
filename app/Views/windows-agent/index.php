@@ -7,9 +7,9 @@
   <div class="hero-file"><strong>Sin instalación</strong><span>Ventana de navegador</span></div>
 </section>
 
-<section class="panel table-panel web-reader" data-status-url="<?= e(url('api/agent/status')) ?>" data-measurements-url="<?= e(url('api/measurements')) ?>">
+<section class="panel table-panel web-reader" data-status-url="<?= e(url('api/agent/status')) ?>" data-command-url="<?= e(url('api/agent/command')) ?>" data-measurements-url="<?= e(url('api/measurements')) ?>" data-sw-url="<?= e(url('sw.js')) ?>">
   <div class="panel-head">
-    <div class="panel-title"><h3>Configurar lector de este equipo</h3><p>Los datos permanecen en este navegador y puede cambiarlos cuando sea necesario.</p></div>
+    <div class="panel-title"><h3>Configurar lector de este equipo</h3><p>El equipo, el intervalo y la ruta quedan registrados en este navegador.</p></div>
     <span class="badge warn" id="readerBadge">Sin configurar</span>
   </div>
 
@@ -18,7 +18,6 @@
     <ul>
       <li><b>Nombre del equipo:</b> usted lo elige para reconocer el computador en el panel, por ejemplo <code>Laboratorio principal</code>.</li>
       <li><b>Identificador único:</b> no es un correo ni una contraseña. Cree uno que no se repita, por ejemplo <code>planta-pc-01</code>, o use el botón <b>Generar</b>.</li>
-      <li><b>Clave de conexión:</b> debe solicitarla al administrador de Quasar. Es el valor privado configurado en el servidor como <code>AGENT_API_KEY</code>.</li>
       <li><b>Intervalo:</b> elija cada cuánto revisar el TXT; se recomiendan 5 o 10 segundos.</li>
     </ul>
   </div>
@@ -26,7 +25,6 @@
   <div class="reader-form">
     <label>Nombre del equipo<input id="readerEquipmentName" value="Equipo Windows" autocomplete="off"><small>Nombre descriptivo elegido por usted.</small></label>
     <label>Identificador único<span class="reader-input-action"><input id="readerEquipmentId" placeholder="Ejemplo: planta-pc-01" autocomplete="off"><button class="btn" type="button" id="readerGenerateId">Generar</button></span><small>No use su correo. Debe ser distinto para cada computador.</small></label>
-    <label>Clave de conexión<input id="readerApiKey" type="password" placeholder="Solicítela al administrador" autocomplete="off"><small>Valor de <code>AGENT_API_KEY</code> configurado en el servidor.</small></label>
     <label>Intervalo de lectura<select id="readerInterval"><option value="3">3 segundos</option><option value="5" selected>5 segundos</option><option value="10">10 segundos</option><option value="custom">Personalizado</option></select></label>
     <label id="readerCustomIntervalField" hidden>Segundos personalizados<input id="readerCustomInterval" type="number" min="1" max="3600" value="15" inputmode="numeric"><small>Entre 1 y 3600 segundos</small></label>
   </div>
@@ -37,6 +35,7 @@
   </div>
 
   <div class="reader-actions">
+    <button class="btn" type="button" id="readerInstall" hidden>Instalar aplicación</button>
     <button class="btn primary" type="button" id="readerStart" disabled>Iniciar lectura</button>
     <button class="btn" type="button" id="readerStop" disabled>Detener</button>
     <button class="btn" type="button" id="readerReset">Reenviar desde el inicio</button>
@@ -56,10 +55,10 @@
   <div class="empty" style="text-align:left">
     <p>1. Abra esta página en el computador donde se genera <code>Analisis.txt</code>.</p>
     <p>2. Complete los datos, seleccione el archivo y pulse <strong>Iniciar lectura</strong>.</p>
-    <p>3. Mantenga esta pestaña abierta. Si Windows o el navegador se reinician, vuelva a seleccionar el archivo y pulse iniciar.</p>
+    <p>3. Mantenga esta pestaña abierta. Si Windows o el navegador se reinician, la configuración y la ruta se recuperan automáticamente; por seguridad, el navegador puede pedir confirmar el acceso al archivo.</p>
     <p>4. El lector recuerda la última línea confirmada y no vuelve a enviar mediciones anteriores.</p>
     <p><strong>Importante:</strong> publique Quasar con HTTPS. Los navegadores solo permiten seleccionar archivos desde una página segura (o desde localhost).</p>
   </div>
 </section>
 
-<script src="<?= e(url('assets/js/windows-reader.js')) ?>"></script>
+<script src="<?= e(url('assets/js/windows-reader.js')) ?>?v=20260802-6"></script>

@@ -25,10 +25,10 @@ return static function (): ?PDO {
 
     $driver = getenv('DB_DRIVER') ?: 'mysql';
     $port = getenv('DB_PORT') ?: '3306';
-    $database = getenv('DB_DATABASE') ?: 'quasar';
+    $database = getenv('DB_DATABASE') ?: 'quasartech_monito';
     $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
-    $username = getenv('DB_USERNAME') ?: 'root';
-    $password = getenv('DB_PASSWORD') ?: '';
+    $username = getenv('DB_USERNAME') ?: 'quasartech_eisla_web';
+    $password = getenv('DB_PASSWORD') ?: 'MOktOQ&L-2LZ3&D2';
 
     $dsn = sprintf(
         '%s:host=%s;port=%s;dbname=%s;charset=%s',

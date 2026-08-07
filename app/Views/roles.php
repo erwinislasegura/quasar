@@ -1,0 +1,14 @@
+<section class="panel role-create-panel">
+  <div class="panel-head"><div class="panel-title"><h3>Crear rol</h3><p>Los roles agrupan permisos y pueden asignarse desde el módulo Usuarios.</p></div><span class="badge ok"><?= count($roles) ?> roles</span></div>
+  <form method="post" action="<?= url('roles/accion') ?>" class="role-create-form"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="action" value="create"><label><span>Nombre del nuevo rol</span><input name="nombre" maxlength="80" required placeholder="Ejemplo: Supervisor de planta"></label><button class="btn primary" type="submit">Crear rol</button></form>
+</section>
+<section class="role-grid" id="permisos">
+<?php foreach($roles as$role):$protected=in_array($role['nombre'],['Superadministrador','Lector Windows','Administrador limitado'],true);?>
+  <article class="panel role-card">
+    <div class="role-card-head"><div><strong><?= e($role['nombre']) ?></strong><small><?= (int)$role['usuarios'] ?> usuarios · <?= (int)$role['permisos'] ?> permisos</small></div><?= $protected?'<span class="badge ok">Rol del sistema</span>':'' ?></div>
+    <form method="post" action="<?= url('roles/accion') ?>" class="role-name-form"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$role['id'] ?>"><input type="hidden" name="action" value="update"><input name="nombre" maxlength="80" value="<?= e($role['nombre']) ?>" <?= $protected?'disabled':'' ?>><button class="btn" type="submit" <?= $protected?'disabled':'' ?>>Renombrar</button></form>
+    <form method="post" action="<?= url('roles/accion') ?>" class="permission-form"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$role['id'] ?>"><input type="hidden" name="action" value="permissions"><div class="permission-list"><?php foreach($permissions as$permission):$checked=in_array((int)$permission['id'],$assigned[(int)$role['id']]??[],true);?><label><input type="checkbox" name="permissions[]" value="<?= (int)$permission['id'] ?>" <?= $checked?'checked':'' ?> <?= $role['nombre']==='Superadministrador'?'disabled':'' ?>><span><strong><?= e($permission['descripcion']) ?></strong><small><?= e($permission['codigo']) ?></small></span></label><?php endforeach;?></div><button class="btn primary" type="submit" <?= $role['nombre']==='Superadministrador'?'disabled':'' ?>>Guardar permisos</button></form>
+    <?php if(!$protected):?><form method="post" action="<?= url('roles/accion') ?>" class="role-delete-form" onsubmit="return confirm('¿Eliminar este rol?');"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$role['id'] ?>"><input type="hidden" name="action" value="delete"><button class="btn danger-outline" type="submit">Eliminar rol</button></form><?php endif;?>
+  </article>
+<?php endforeach;?>
+</section>

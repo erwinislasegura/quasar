@@ -2,12 +2,27 @@
         <div class="hero-copy">
           <small>Sistema operativo</small>
           <h2>Lectura y análisis automático de variables</h2>
-          <p>Visualización de Fecha, Hora, TSF, Razón O/A y Conductividad, con detección de valores negativos y filtros para revisar cada medición.</p>
         </div>
         <div class="hero-file">
           <strong>Analisis.txt</strong>
           <span id="heroFileMeta">—</span>
         </div>
+      </section>
+
+      <section class="dashboard-equipment-filter" aria-label="Filtro global por equipo">
+        <div>
+          <small>Vista del dashboard</small>
+          <strong>Filtrar todas las mediciones por equipo</strong>
+        </div>
+        <label class="field">
+          <span>Equipo</span>
+          <select id="equipmentFilter">
+            <option value="">Todos los equipos</option>
+            <?php foreach (($equipmentOptions ?? []) as $equipment): ?>
+              <option value="<?= e($equipment['identificador']) ?>" <?= ($selectedEquipment ?? '') === $equipment['identificador'] ? 'selected' : '' ?>><?= e($equipment['nombre']) ?> · <?= e($equipment['identificador']) ?> (<?= (int) $equipment['total'] ?>)</option>
+            <?php endforeach; ?>
+          </select>
+        </label>
       </section>
 
       <section class="kpi-grid">
@@ -53,26 +68,40 @@
         <article class="kpi">
           <div class="kpi-icon red">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 9v5M12 17h.01"/>
+              <path d="M12 3v13"/><path d="M8 12a4 4 0 1 0 8 0V7a4 4 0 0 0-8 0v5Z"/><path d="M7 21h10"/>
             </svg>
           </div>
           <div>
-            <div class="kpi-label">Conductividad negativa</div>
-            <div class="kpi-value" id="negativeCount">0</div>
-            <div class="kpi-foot">Registros que requieren revisión</div>
+            <div class="kpi-label">Conductividad promedio</div>
+            <div class="kpi-value" id="avgConductividadKpi">0</div>
+            <div class="kpi-foot">Promedio del equipo seleccionado</div>
           </div>
         </article>
+
+      </section>
+
+      <section class="panel dashboard-recent" aria-label="Últimos registros del equipo seleccionado">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h3>Últimos registros recibidos</h3>
+            <p id="recentRecordsContext">Lecturas más recientes según el equipo seleccionado</p>
+          </div>
+          <a class="text-link recent-all-link" href="<?= e(url('mediciones')) ?>">Ver todas las mediciones</a>
+        </div>
+        <div class="recent-measurements" id="recentMeasurements"></div>
+        <div class="empty recent-empty" id="recentMeasurementsEmpty" hidden>No hay mediciones disponibles para este equipo.</div>
       </section>
 
       <section class="dashboard-grid" id="graficos">
-        <article class="panel">
+        <article class="panel dashboard-chart-full">
           <div class="panel-head">
             <div class="panel-title">
               <h3>Evolución de las mediciones</h3>
-              <p>Serie cronológica de TSF y Conductividad</p>
+              <p>Serie cronológica de TSF, Razón O/A y Conductividad</p>
             </div>
             <div class="legend">
               <span class="legend-item"><i class="legend-dot" style="background:#2368e8"></i>TSF</span>
+              <span class="legend-item"><i class="legend-dot" style="background:#e99a18"></i>Razón O/A</span>
               <span class="legend-item"><i class="legend-dot" style="background:#17a6b6"></i>Conductividad</span>
             </div>
           </div>
@@ -81,36 +110,6 @@
           </div>
         </article>
 
-        <article class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <h3>Calidad de conductividad</h3>
-              <p>Valores no negativos frente a valores negativos</p>
-            </div>
-          </div>
-          <div class="quality-body">
-            <div class="quality-chart" id="qualityChart">
-              <div class="quality-value">
-                <strong id="validPercent">0%</strong>
-                <span>no negativos</span>
-              </div>
-            </div>
-            <div>
-              <div class="quality-row">
-                <span>Valores no negativos</span>
-                <strong id="validCount">0</strong>
-              </div>
-              <div class="quality-row">
-                <span>Valores negativos</span>
-                <strong id="invalidCount">0</strong>
-              </div>
-              <div class="quality-row">
-                <span>Promedio no negativo</span>
-                <strong id="avgConductividad">0</strong>
-              </div>
-            </div>
-          </div>
-        </article>
       </section>
 
       <section class="range-grid">
@@ -151,9 +150,9 @@
           <label class="field">
             <select id="statusFilter">
               <option value="">Toda conductividad</option>
-              <option value="valid">No negativa</option>
-              <option value="negative">Negativa</option>
-              <option value="zero">Igual a cero</option>
+              <option value="valid">Conductividad ≥ 0</option>
+              <option value="negative">Conductividad &lt; 0</option>
+              <option value="zero">Conductividad = 0</option>
             </select>
           </label>
           <label class="field">

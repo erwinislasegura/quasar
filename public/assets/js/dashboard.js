@@ -5,9 +5,11 @@ const RAW_DATA = window.QUASAR_DATA || [];
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
       }).format(value);
+    const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[character]));
 
     const state = {
       filtered: [...RAW_DATA],
+      dashboard: [...RAW_DATA],
       page: 1,
       pageSize: 10,
       sortKey: 'iso',
@@ -17,16 +19,11 @@ const RAW_DATA = window.QUASAR_DATA || [];
     const els = {
       totalRecords: document.getElementById('totalRecords'),
       dateCount: document.getElementById('dateCount'),
-      avgTSF: document.getElementById('avgTiempo'),
+      avgTiempo: document.getElementById('avgTiempo'),
       avgRazon: document.getElementById('avgRazon'),
-      negativeCount: document.getElementById('negativeCount'),
-      validPercent: document.getElementById('validPercent'),
-      validCount: document.getElementById('validCount'),
-      invalidCount: document.getElementById('invalidCount'),
-      avgConductividad: document.getElementById('avgConductividad'),
-      qualityChart: document.getElementById('qualityChart'),
-      minTSF: document.getElementById('minTiempo'),
-      maxTSF: document.getElementById('maxTiempo'),
+      avgConductividadKpi: document.getElementById('avgConductividadKpi'),
+      minTiempo: document.getElementById('minTiempo'),
+      maxTiempo: document.getElementById('maxTiempo'),
       minRazon: document.getElementById('minRazon'),
       maxRazon: document.getElementById('maxRazon'),
       minConductividad: document.getElementById('minConductividad'),
@@ -37,11 +34,15 @@ const RAW_DATA = window.QUASAR_DATA || [];
       pagination: document.getElementById('pagination'),
       visibleBadge: document.getElementById('visibleBadge'),
       searchInput: document.getElementById('searchInput'),
+      equipmentFilter: document.getElementById('equipmentFilter'),
       dateFilter: document.getElementById('dateFilter'),
       statusFilter: document.getElementById('statusFilter'),
       pageSize: document.getElementById('pageSize'),
       lastReadText: document.getElementById('lastReadText'),
       heroFileMeta: document.getElementById('heroFileMeta'),
+      recentMeasurements: document.getElementById('recentMeasurements'),
+      recentMeasurementsEmpty: document.getElementById('recentMeasurementsEmpty'),
+      recentRecordsContext: document.getElementById('recentRecordsContext'),
       tooltip: document.getElementById('tooltip')
     };
 
@@ -49,38 +50,52 @@ const RAW_DATA = window.QUASAR_DATA || [];
       return items.length ? items.reduce((sum, item) => sum + item[key], 0) / items.length : 0;
     }
 
-    function initStats() {
-      const validConductivity = RAW_DATA.filter(item => item.conductividad >= 0);
-      const invalidConductivity = RAW_DATA.filter(item => item.conductividad < 0);
-      const uniqueDates = [...new Set(RAW_DATA.map(item => item.fecha))];
+    function renderStats(data) {
+      const uniqueDates = [...new Set(data.map(item => item.fecha))];
 
-      els.totalRecords.textContent = RAW_DATA.length;
+      els.totalRecords.textContent = data.length;
       els.dateCount.textContent = `${uniqueDates.length} fechas diferentes`;
-      els.avgTiempo.textContent = fmt(average(RAW_DATA, 'tiempo'), 2);
-      els.avgRazon.textContent = fmt(average(RAW_DATA, 'razon'), 3);
-      els.negativeCount.textContent = invalidConductivity.length;
+      els.avgTiempo.textContent = fmt(average(data, 'tiempo'), 2);
+      els.avgRazon.textContent = fmt(average(data, 'razon'), 3);
+      els.avgConductividadKpi.textContent = fmt(average(data, 'conductividad'), 2);
 
-      const validPercentage = Math.round((validConductivity.length / RAW_DATA.length) * 100);
-      els.validPercent.textContent = `${validPercentage}%`;
-      els.validCount.textContent = validConductivity.length;
-      els.invalidCount.textContent = invalidConductivity.length;
-      els.avgConductividad.textContent = fmt(average(validConductivity, 'conductividad'), 2);
-      els.qualityChart.style.setProperty('--valid-angle', `${validPercentage * 3.6}deg`);
+      const tiempoValues = data.map(x => x.tiempo);
+      const razonValues = data.map(x => x.razon);
+      const conductivityValues = data.map(x => x.conductividad);
 
-      const tiempoValues = RAW_DATA.map(x => x.tiempo);
-      const razonValues = RAW_DATA.map(x => x.razon);
-      const conductivityValues = RAW_DATA.map(x => x.conductividad);
+      els.minTiempo.textContent = tiempoValues.length ? fmt(Math.min(...tiempoValues), 2) : '0';
+      els.maxTiempo.textContent = tiempoValues.length ? fmt(Math.max(...tiempoValues), 2) : '0';
+      els.minRazon.textContent = razonValues.length ? fmt(Math.min(...razonValues), 3) : '0';
+      els.maxRazon.textContent = razonValues.length ? fmt(Math.max(...razonValues), 3) : '0';
+      els.minConductividad.textContent = conductivityValues.length ? fmt(Math.min(...conductivityValues), 0) : '0';
+      els.maxConductividad.textContent = conductivityValues.length ? fmt(Math.max(...conductivityValues), 0) : '0';
 
-      els.minTiempo.textContent = fmt(Math.min(...tiempoValues), 2);
-      els.maxTiempo.textContent = fmt(Math.max(...tiempoValues), 2);
-      els.minRazon.textContent = fmt(Math.min(...razonValues), 3);
-      els.maxRazon.textContent = fmt(Math.max(...razonValues), 3);
-      els.minConductividad.textContent = fmt(Math.min(...conductivityValues), 0);
-      els.maxConductividad.textContent = fmt(Math.max(...conductivityValues), 0);
+      const last = [...data].sort((a,b) => a.iso.localeCompare(b.iso)).at(-1);
+      els.lastReadText.textContent = last ? `${last.fecha} · ${last.hora}` : 'Sin mediciones';
+      els.heroFileMeta.textContent = `${data.length} líneas procesadas`;
+      renderRecentMeasurements(data);
+    }
 
-      const last = [...RAW_DATA].sort((a,b) => a.iso.localeCompare(b.iso)).at(-1);
-      els.lastReadText.textContent = `${last.fecha} · ${last.hora}`;
-      els.heroFileMeta.textContent = `${RAW_DATA.length} líneas procesadas`;
+    function renderRecentMeasurements(data) {
+      const latest = [...data].sort((a,b) => b.iso.localeCompare(a.iso)).slice(0, 4);
+      const selectedLabel = els.equipmentFilter?.selectedOptions?.[0]?.textContent?.trim() || 'Todos los equipos';
+      els.recentRecordsContext.textContent = selectedLabel === 'Todos los equipos'
+        ? 'Las 4 lecturas más recientes de todos los equipos'
+        : `Las 4 lecturas más recientes de ${selectedLabel.replace(/\s*\(\d+\)$/, '')}`;
+      els.recentMeasurementsEmpty.hidden = latest.length > 0;
+      els.recentMeasurements.innerHTML = latest.map(item => `
+        <article class="recent-record">
+          <div class="recent-record-time"><strong>${escapeHtml(item.fecha)}</strong><span>${escapeHtml(item.hora)}</span></div>
+          <div class="recent-record-equipment"><strong>${escapeHtml(item.equipo || 'Equipo sin nombre')}</strong><span>${escapeHtml(item.equipoIdentificador || 'Sin identificador')}</span></div>
+          <div class="recent-record-value"><small>TSF</small><strong>${fmt(item.tiempo, 3)}</strong></div>
+          <div class="recent-record-value"><small>Razón O/A</small><strong>${fmt(item.razon, 6)}</strong></div>
+          <div class="recent-record-value"><small>Conductividad</small><strong>${fmt(item.conductividad, 2)}</strong></div>
+        </article>
+      `).join('');
+    }
+
+    function initFilters() {
+      const uniqueDates = [...new Set(RAW_DATA.map(item => item.fecha))];
 
       uniqueDates
         .sort((a,b) => {
@@ -96,9 +111,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
     }
 
     function getStatus(item) {
-      if (item.conductividad < 0) return {label: 'Valor negativo', className: 'error'};
-      if (item.conductividad === 0) return {label: 'Valor cero', className: 'warn'};
-      return {label: 'No negativo', className: 'ok'};
+      if (item.conductividad < 0) return {label: 'Conductividad < 0', className: 'error'};
+      if (item.conductividad === 0) return {label: 'Conductividad = 0', className: 'warn'};
+      return {label: 'Conductividad > 0', className: 'ok'};
     }
 
     function applyFilters() {
@@ -106,14 +121,17 @@ const RAW_DATA = window.QUASAR_DATA || [];
       const date = els.dateFilter.value;
       const status = els.statusFilter.value;
 
-      state.filtered = RAW_DATA.filter(item => {
+      state.dashboard = [...RAW_DATA];
+      state.filtered = state.dashboard.filter(item => {
         const haystack = [
           item.fecha,
           item.hora,
           item.tiempo,
           item.razon,
           item.conductividad,
-          item.archivo
+          item.archivo,
+          item.equipo,
+          item.equipoIdentificador
         ].join(' ').toLowerCase();
 
         const matchesQuery = !query || haystack.includes(query);
@@ -128,7 +146,9 @@ const RAW_DATA = window.QUASAR_DATA || [];
       });
 
       state.page = 1;
+      renderStats(state.dashboard);
       renderTable();
+      drawChart();
     }
 
     function sortData(data) {
@@ -197,6 +217,13 @@ const RAW_DATA = window.QUASAR_DATA || [];
         el.addEventListener(el.tagName === 'INPUT' ? 'input' : 'change', applyFilters);
       });
 
+      els.equipmentFilter.addEventListener('change', () => {
+        const target = new URL(window.location.href);
+        if (els.equipmentFilter.value) target.searchParams.set('equipo', els.equipmentFilter.value);
+        else target.searchParams.delete('equipo');
+        window.location.assign(target.toString());
+      });
+
       els.pageSize.addEventListener('change', () => {
         state.pageSize = Number(els.pageSize.value);
         state.page = 1;
@@ -244,11 +271,30 @@ const RAW_DATA = window.QUASAR_DATA || [];
       ctx.font = '10px system-ui';
       ctx.textBaseline = 'middle';
 
-      const data = RAW_DATA;
+      const data = state.dashboard.filter(item =>
+        Number.isFinite(Number(item.tiempo)) && Number.isFinite(Number(item.razon)) && Number.isFinite(Number(item.conductividad))
+      ).map(item => ({
+        ...item,
+        tiempo: Number(item.tiempo),
+        razon: Number(item.razon),
+        conductividad: Number(item.conductividad)
+      }));
+      if (!data.length) {
+        ctx.fillStyle = '#8a96a8';
+        ctx.textAlign = 'center';
+        ctx.fillText('No hay mediciones para este equipo', width / 2, height / 2);
+        canvas._chartMeta = null;
+        return;
+      }
       const tiempo = data.map(d => d.tiempo);
+      const razon = data.map(d => d.razon);
       const cond = data.map(d => d.conductividad);
-      const maxY = Math.ceil(Math.max(...tiempo, ...cond) / 50) * 50;
-      const minY = Math.min(0, Math.floor(Math.min(...tiempo, ...cond) / 10) * 10);
+      const rawMin = Math.min(...tiempo, ...razon, ...cond);
+      const rawMax = Math.max(...tiempo, ...razon, ...cond);
+      const span = rawMax - rawMin;
+      const rangePad = span > 0 ? span * 0.08 : Math.max(1, Math.abs(rawMax) * 0.1);
+      const minY = Math.min(0, rawMin - rangePad);
+      const maxY = Math.max(0, rawMax + rangePad, minY + 1);
 
       const x = index => pad.left + (index / Math.max(1, data.length - 1)) * plotW;
       const y = value => pad.top + (1 - (value - minY) / (maxY - minY)) * plotH;
@@ -279,21 +325,31 @@ const RAW_DATA = window.QUASAR_DATA || [];
       }
 
       const drawSeries = (key, color) => {
-        ctx.beginPath();
-        data.forEach((item,index) => {
-          const px = x(index);
-          const py = y(item[key]);
-          if (index === 0) ctx.moveTo(px,py);
-          else ctx.lineTo(px,py);
+        if (data.length > 1) {
+          ctx.beginPath();
+          data.forEach((item,index) => {
+            const px = x(index);
+            const py = y(item[key]);
+            if (index === 0) ctx.moveTo(px,py);
+            else ctx.lineTo(px,py);
+          });
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.lineJoin = 'round';
+          ctx.lineCap = 'round';
+          ctx.stroke();
+        }
+
+        data.forEach((item, index) => {
+          ctx.beginPath();
+          ctx.arc(x(index), y(item[key]), data.length === 1 ? 5 : 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
         });
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
-        ctx.stroke();
       };
 
       drawSeries('tiempo', '#2368e8');
+      drawSeries('razon', '#e99a18');
       drawSeries('conductividad', '#17a6b6');
 
       canvas._chartMeta = {x,y,pad,plotW,plotH,data};
@@ -311,10 +367,11 @@ const RAW_DATA = window.QUASAR_DATA || [];
         const relative = Math.min(1, Math.max(0, (mx - meta.pad.left) / meta.plotW));
         const index = Math.round(relative * (meta.data.length - 1));
         const item = meta.data[index];
+        if (!item) return;
 
         els.tooltip.innerHTML = `
           <strong>${item.fecha} ${item.hora}</strong><br>
-          TSF: ${fmt(item.tiempo,3)} · Conductividad: ${fmt(item.conductividad,2)}
+          TSF: ${fmt(item.tiempo,3)} · Razón O/A: ${fmt(item.razon,6)} · Conductividad: ${fmt(item.conductividad,2)}
         `;
         els.tooltip.style.left = `${event.clientX}px`;
         els.tooltip.style.top = `${event.clientY}px`;
@@ -376,12 +433,11 @@ const RAW_DATA = window.QUASAR_DATA || [];
       });
     }
 
-    initStats();
+    initFilters();
     setupTableEvents();
     setupChartTooltip();
     setupActions();
-    renderTable();
-    drawChart();
+    applyFilters();
 
     let resizeTimer;
     window.addEventListener('resize', () => {

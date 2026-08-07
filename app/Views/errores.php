@@ -1,0 +1,8 @@
+<section class="panel management-panel">
+  <div class="panel-head"><div class="panel-title"><h3>Registro de errores</h3><p>Incidencias detectadas en API, lectores y operaciones administrativas.</p></div><span class="management-total"><?= count($rows) ?> <small>registros</small></span></div>
+  <div class="error-list">
+    <?php foreach($rows as$row):$resolved=$row['estado']==='Resuelto';?>
+      <article class="error-record <?= $resolved?'resolved':'' ?>"><div class="error-mark">!</div><div class="error-content"><div><strong><?= e($row['origen']) ?></strong><span class="status-text <?= $resolved?'inactive':'paused' ?>"><?= e($row['estado']) ?></span></div><p><?= e($row['detalle']) ?></p><small><?= e($row['created_at']) ?></small></div><div class="error-actions"><form method="post" action="<?= url('errores/accion') ?>"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$row['id'] ?>"><input type="hidden" name="action" value="<?= $resolved?'reopen':'resolve' ?>"><button class="btn" type="submit"><?= $resolved?'Reabrir':'Marcar resuelto' ?></button></form><form method="post" action="<?= url('errores/accion') ?>" onsubmit="return confirm('¿Eliminar este registro de error?');"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= (int)$row['id'] ?>"><input type="hidden" name="action" value="delete"><button class="icon-danger-btn" type="submit">Eliminar</button></form></div></article>
+    <?php endforeach;?><?php if(!$rows):?><div class="empty">No existen errores registrados.</div><?php endif;?>
+  </div>
+</section>
